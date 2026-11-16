@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AntarJemput Al-Uswah Bangil (PakTony)</title>
+  <link rel="stylesheet" href="https://unpkg.com" />
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { margin: 0; padding: 0; background: #f4f6f9; color: #1e293b; }
+    .header { background: #0f766e; color: white; padding: 16px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+    .header h1 { margin: 0; font-size: 18px; font-weight: 700; }
+    .header p { margin: 4px 0 0; font-size: 13px; opacity: 0.9; }
+    .container { padding: 16px; max-width: 500px; margin: 0 auto; }
+    .card { background: white; border-radius: 14px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); margin-bottom: 16px; }
+    .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s; }
+    .btn-primary { background: #0f766e; color: white; }
+    .btn-danger { background: #dc2626; color: white; }
+    .btn-outline { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
+    .btn-gmaps { background: #2563eb; color: white; display: block; text-align: center; text-decoration: none; }
+    input { width: 100%; padding: 14px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 18px; text-align: center; letter-spacing: 4px; margin-top: 8px; }
+    #map { height: 340px; width: 100%; border-radius: 12px; margin-top: 12px; border: 1px solid #cbd5e1; z-index: 1; }
+    .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+    .aktif { background: #dcfce7; color: #166534; }
+    .nonaktif { background: #fee2e2; color: #991b1b; }
+    .info-text { font-size: 13px; color: #475569; margin: 6px 0; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>AntarJemput Al-Uswah Bangil</h1>
+    <p>Armada PakTony • Pantau Lokasi Real-Time</p>
+  </div>
+
+  <div class="container">
+    <div id="login-box" class="card">
+      <h3 style="margin-top:0; text-align:center;">Masukkan PIN Akses</h3>
+      <p class="info-text" style="text-align:center;">Masukkan PIN dari Pak Tony untuk memantau lokasi kendaraan.</p>
+      <input type="password" id="pin-input" inputmode="numeric" maxlength="6" placeholder="••••">
+      <button class="btn btn-primary" onclick="cekPin()">Masuk Aplikasi</button>
+    </div>
+
+    <div id="parent-box" class="card hidden">
+      <div id="status-ortu" class="status-badge nonaktif">Menunggu data...</div>
+      <div class="info-text" id="update-time">Terakhir diperbarui: -</div>
+      <div id="map"></div>
+      <a id="link-macet" href="#" target="_blank" class="btn btn-gmaps">🚦 Cek Macet & Rute di Google Maps</a>
+      <button class="btn btn-outline" onclick="logout()">Keluar</button>
+    </div>
+
+    <div id="driver-box" class="card hidden">
+      <h3 style="margin-top:0;">Mode Supir (Pak Tony)</h3>
+      <div id="status-supir" class="status-badge nonaktif">Status: Tidak Aktif (Parkir)</div>
+      <p class="info-text" id="gps-info">Tekan tombol di bawah saat mulai berangkat mengantar/menjemput murid.</p>
+      <button id="btn-start" class="btn btn-primary" onclick="mulaiAntar()">🚗 Mulai Antar (Kirim Lokasi)</button>
+      <button id="btn-stop" class="btn btn-danger hidden" onclick="stopAntar()">🛑 Selesai Antar</button>
+      <button class="btn btn-outline" onclick="logout()">Keluar</button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com"></script>
+  <script>
+    const DB_URL = "https://firebasedatabase.app";
+    const PIN_ORTU = "1234";
+    const PIN_SUPIR = "9999";
+
+    let map, marker, watchId, intervalOrtu;
+
+    function cekPin() {
+      const pin = document.getElementById("pin-input").value.trim();
+      if (pin === PIN_ORTU) {
+        document.getElementById("login-box").classList.add("hidden");
+        document.getElementById("parent-box").classList.remove("hidden");
+        bukaPetaOrtu();
+      } else if (pin === PIN_SUPIR) {
+        document.getElementById("login-box").classList.add("hidden");
+        document.getElementById("driver-box").classList.remove("hidden");
+      } else {
+        alert("PIN salah! Silakan hubungi Pak Tony.");
+      }
+    }
+
+    function logout() {
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+      if (intervalOrtu) clearInterval(intervalOrtu);
+      location.reload();
+    }
+
+    function mulaiAntar() {
+      if (!navigator.geolocation) {
+        alert("Browser HP tidak mendukung GPS.");
+        return;
+      }
+      document.getElementById("btn-start").classList.add("hidden");
+      document.getElementById("btn-stop").classList.remove("hidden");
+      document.getElementById("status-supir").className = "status-badge aktif";
+      document.getElementById("status-supir").innerText = "Status: SEDANG JALAN (GPS Aktif)";
+
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          const data = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            aktif: true,
+            waktu: new Date().toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+          };
+          document.getElementById("gps-info").innerText = `Lokasi terkirim pukul ${data.waktu}. Biarkan layar ini terbuka selama perjalanan.`;
+          fetch(DB_URL, { method: "PUT", body: JSON.stringify(data) });
+        },
+        (err) => {
+          alert("Gagal mengambil GPS. Pastikan izin lokasi & GPS HP aktif!");
+        },
+        { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 }
+      );
+    }
+
+    function stopAntar() {
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+      fetch(DB_URL, {
+        method: "PATCH",
+        body: JSON.stringify({ aktif: false, waktu: new Date().toLocaleTimeString("id-ID") })
+      }).then(() => {
+        alert("Perjalanan selesai. Pelacakan dimatikan.");
+        location.reload();
+      });
+    }
+
+    function bukaPetaOrtu() {
+      map = L.map("map").setView([-7.5995, 112.7850], 14);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap"
+      }).addTo(map);
+
+      const mobilIcon = L.divIcon({
+        html: '<div style="font-size:28px; text-align:center;">🚐</div>',
+        className: '',
+        iconSize: [36, 36],
+        iconAnchor: [18, 18]
+      });
+
+      ambilDataLokasi(mobilIcon);
+      intervalOrtu = setInterval(() => ambilDataLokasi(mobilIcon), 4000);
+    }
+
+    function ambilDataLokasi(icon) {
+      fetch(DB_URL)
+        .then(res => res.json())
+        .then(data => {
+          if (!data || !data.lat) {
+            document.getElementById("status-ortu").className = "status-badge nonaktif";
+            document.getElementById("status-ortu").innerText = "Armada Belum Berangkat";
+            return;
+          }
+          const badge = document.getElementById("status-ortu");
+          if (data.aktif) {
+            badge.className = "status-badge aktif";
+            badge.innerText = "🟢 Armada Sedang Dalam Perjalanan";
+          } else {
+            badge.className = "status-badge nonaktif";
+            badge.innerText = "🔴 Armada Sedang Berhenti / Selesai";
+          }
+          document.getElementById("update-time").innerText = `Update terakhir: Pukul ${data.waktu} WIB`;
+
+          const posisi = [data.lat, data.lng];
+          if (!marker) {
+            marker = L.marker(posisi, { icon: icon }).addTo(map);
+          } else {
+            marker.setLatLng(posisi);
+          }
+          map.setView(posisi, 16);
+
+          document.getElementById("link-macet").href = `https://google.com{data.lat},${data.lng},16z/data=!5m1!1e1`;
+        });
+    }
+  </script>
+</body>
+</html>
