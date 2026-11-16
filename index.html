@@ -211,3 +211,95 @@
             body: JSON.stringify({ lat: lat, lng: lng, aktif: true, waktu: waktu })
           });
 
+          Object.keys(dataMuridGlobal).forEach(kunci => {
+            const m = dataMuridGlobal[kunci];
+            const jarak = hitungJarak(lat, lng, m.lat, m.lng);
+            if (jarak <= 50 && !sudahBunyi[kunci]) {
+              sudahBunyi[kunci] = true;
+              bunyikanSuara("Sebentar lagi sampai di rumah " + m.nama);
+            }
+          });
+        },
+        () => alert("Gagal mengambil GPS. Pastikan izin lokasi aktif!"),
+        { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 }
+      );
+    }
+
+    function stopAntar() {
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+      fetch(BASE_URL + "/lokasi.json", {
+        method: "PATCH",
+        body: JSON.stringify({ aktif: false, waktu: new Date().toLocaleTimeString("id-ID") })
+      }).then(() => {
+        alert("Perjalanan selesai.");
+        location.reload();
+      });
+    }
+
+    function bukaPetaOrtu() {
+      map = L.map("map").setView(L.latLng(-7.5995, 112.7850), 14);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap"
+      }).addTo(map);
+      map.invalidateSize();
+
+      L.marker(L.latLng(muridAktif.lat, muridAktif.lng)).addTo(map).bindPopup("🏠 Rumah " + muridAktif.nama);
+
+      ambilDataLokasi();
+      intervalOrtu = setInterval(ambilDataLokasi, 4000);
+    }
+
+    function ambilDataLokasi() {
+      fetch(BASE_URL + "/lokasi.json")
+        .then(res => res.json())
+        .then(data => {
+          if (!data || !data.lat) {
+            document.getElementById("status-ortu").className = "status-badge nonaktif";
+            document.getElementById("status-ortu").innerText = "Armada Belum Berangkat";
+            return;
+          }
+          const badge = document.getElementById("status-ortu");
+          if (data.aktif) {
+            badge.className = "status-badge aktif";
+            badge.innerText = "🟢 Armada Sedang Dalam Perjalanan";
+          } else {
+            badge.className = "status-badge nonaktif";
+            badge.innerText = "🔴 Armada Sedang Berhenti / Selesai";
+          }
+          document.getElementById("update-time").innerText = "Update terakhir: Pukul " + data.waktu + " WIB";
+
+          const posisi = L.latLng(data.lat, data.lng);
+          const ikonMobil = L.divIcon({
+            html: '<div style="font-size:32px; line-height:1;">🚐</div>',
+            className: '',
+            iconSize: L.point(32, 32),
+            iconAnchor: L.point(16, 16)
+          });
+
+          if (!marker) {
+            marker = L.marker(posisi, { icon: ikonMobil }).addTo(map).bindPopup("<b>Armada Pak Tony</b>").openPopup();
+          } else {
+            marker.setLatLng(posisi);
+          }
+          map.setView(posisi, 16);
+
+          const jarak = hitungJarak(data.lat, data.lng, muridAktif.lat, muridAktif.lng);
+          const banner = document.getElementById("notif-ortu");
+          if (data.aktif && jarak <= 50) {
+            banner.innerText = "🔔 Armada Pak Tony sudah sampai di dekat rumah " + muridAktif.nama + "!";
+            banner.classList.remove("hidden");
+            if (!sudahBunyi["ortu"]) {
+              sudahBunyi["ortu"] = true;
+              bunyikanSuara("Armada Pak Tony sudah sampai di dekat rumah " + muridAktif.nama);
+            }
+          } else {
+            banner.classList.add("hidden");
+            if (jarak > 100) sudahBunyi["ortu"] = false;
+          }
+
+          document.getElementById("link-macet").href = "https://google.com@" + data.lat + "," + data.lng + ",16z/data=!5m1!1e1";
+        });
+    }
+  </script>
+</body>
+</html>
