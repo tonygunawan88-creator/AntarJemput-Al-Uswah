@@ -159,7 +159,14 @@
 
           const posisi = [data.lat, data.lng];
           if (!marker) {
-            marker = L.marker(posisi).addTo(map).bindPopup("<b>Armada Pak Tony</b>").openPopup();
+            const ikonMobil = L.divIcon({
+  html: '<div style="font-size:32px; line-height:1;">🚐</div>',
+  className: '',
+  iconSize: [32, 32],
+  iconAnchor: [16, 16]
+});
+marker = L.marker(posisi, { icon: ikonMobil }).addTo(map).bindPopup("<b>Armada Pak Tony</b>").openPopup();
+
           } else {
             marker.setLatLng(posisi);
           }
