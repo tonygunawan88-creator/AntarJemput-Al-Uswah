@@ -1,13 +1,13 @@
 {
-  "name": "AntarJemput Al-Uswah",
-  "short_name": "AntarJemput Al uswah",
+  "name": "Al Uswah Antar Jemput",
+  "short_name": "Al Uswah Antar Jemput",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f766e",
   "theme_color": "#0f766e",
   "icons": [
     {
-      "src": "https://github.com/tonygunawan88-creator/AntarJemput-Al-Uswah/blob/main/file_0000000066e0821191cdca5e85583973.png",
+      "src": "/file_000000006e5871f91cdca5e65583973.png",
       "sizes": "512x512",
       "type": "image/png"
     }
