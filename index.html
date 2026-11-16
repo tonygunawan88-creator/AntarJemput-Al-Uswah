@@ -303,6 +303,10 @@
           document.getElementById("link-macet").href = "https://google.com/maps/@" + data.lat + "," + data.lng + ",16z/data=!5m1!1e1";
         });
     }
+    if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
+
   </script>
 </body>
 </html>
