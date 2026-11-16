@@ -1,10 +1,10 @@
-u<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>AntarJemput Al-Uswah Bangil (PakTony)</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css " />
+  <link rel="stylesheet" href="https://unpkg.com" />
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { margin: 0; padding: 0; background: #f4f6f9; color: #1e293b; }
@@ -13,17 +13,22 @@ u<!DOCTYPE html>
     .header p { margin: 4px 0 0; font-size: 13px; opacity: 0.9; }
     .container { padding: 16px; max-width: 500px; margin: 0 auto; }
     .card { background: white; border-radius: 14px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); margin-bottom: 16px; }
-    .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+    .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; }
     .btn-primary { background: #0f766e; color: white; }
+    .btn-blue { background: #0284c7; color: white; }
     .btn-danger { background: #dc2626; color: white; }
     .btn-outline { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
     .btn-gmaps { background: #2563eb; color: white; display: block; text-align: center; text-decoration: none; }
-    input { width: 100%; padding: 14px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 18px; text-align: center; letter-spacing: 4px; margin-top: 8px; }
-    #map { height: 340px; width: 100%; border-radius: 12px; margin-top: 12px; border: 1px solid #cbd5e1; z-index: 1; }
-    .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+    input { width: 100%; padding: 14px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 17px; text-align: center; margin-top: 8px; }
+    #map { height: 320px; width: 100%; border-radius: 12px; margin-top: 12px; border: 1px solid #cbd5e1; z-index: 1; }
+    .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
     .aktif { background: #dcfce7; color: #166534; }
     .nonaktif { background: #fee2e2; color: #991b1b; }
+    .notif-banner { background: #fef08a; border: 2px solid #eab308; color: #854d0e; padding: 12px; border-radius: 10px; font-weight: 700; text-align: center; margin-bottom: 10px; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
     .info-text { font-size: 13px; color: #475569; margin: 6px 0; }
+    .murid-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+    .btn-del { background: #fee2e2; color: #b91c1c; border: none; padding: 6px 10px; border-radius: 6px; font-weight: 600; cursor: pointer; }
     .hidden { display: none; }
   </style>
 </head>
@@ -36,13 +41,15 @@ u<!DOCTYPE html>
 
   <div class="container">
     <div id="login-box" class="card">
-      <h3 style="margin-top:0; text-align:center;">Masukkan PIN Akses</h3>
-      <p class="info-text" style="text-align:center;">Masukkan PIN dari Pak Tony untuk memantau lokasi kendaraan.</p>
-      <input type="password" id="pin-input" inputmode="numeric" maxlength="6" placeholder="••••">
-      <button class="btn btn-primary" onclick="cekPin()">Masuk Aplikasi</button>
+      <h3 style="margin-top:0; text-align:center;">Masuk Aplikasi</h3>
+      <p class="info-text" style="text-align:center;">Ketik <b>Nama Panggilan Ananda</b> untuk memantau armada.</p>
+      <input type="text" id="pin-input" placeholder="Contoh: Aqila">
+      <button class="btn btn-primary" onclick="cekAkses()">Masuk</button>
     </div>
 
     <div id="parent-box" class="card hidden">
+      <div id="notif-ortu" class="notif-banner hidden">🔔 Armada Pak Tony sudah dekat dengan rumah!</div>
+      <h4 id="salam-ortu" style="margin:0 0 8px 0; color:#0f766e;">Halo, Wali Murid</h4>
       <div id="status-ortu" class="status-badge nonaktif">Menunggu data...</div>
       <div class="info-text" id="update-time">Terakhir diperbarui: -</div>
       <div id="map"></div>
@@ -50,36 +57,82 @@ u<!DOCTYPE html>
       <button class="btn btn-outline" onclick="logout()">Keluar</button>
     </div>
 
-    <div id="driver-box" class="card hidden">
-      <h3 style="margin-top:0;">Mode Supir (Pak Tony)</h3>
-      <div id="status-supir" class="status-badge nonaktif">Status: Tidak Aktif (Parkir)</div>
-      <p class="info-text" id="gps-info">Tekan tombol di bawah saat mulai berangkat mengantar/menjemput murid.</p>
-      <button id="btn-start" class="btn btn-primary" onclick="mulaiAntar()">🚗 Mulai Antar (Kirim Lokasi)</button>
-      <button id="btn-stop" class="btn btn-danger hidden" onclick="stopAntar()">🛑 Selesai Antar</button>
-      <button class="btn btn-outline" onclick="logout()">Keluar</button>
+    <div id="driver-box" class="hidden">
+      <div class="card">
+        <h3 style="margin-top:0;">Mode Supir (Pak Tony)</h3>
+        <div id="status-supir" class="status-badge nonaktif">Status: Tidak Aktif (Parkir)</div>
+        <p class="info-text" id="gps-info">Tekan tombol di bawah saat mulai berangkat.</p>
+        <button id="btn-start" class="btn btn-primary" onclick="mulaiAntar()">🚗 Mulai Antar (Kirim Lokasi)</button>
+        <button id="btn-stop" class="btn btn-danger hidden" onclick="stopAntar()">🛑 Selesai Antar</button>
+      </div>
+
+      <div class="card">
+        <h4 style="margin-top:0;">📍 Simpan Titik Rumah Murid</h4>
+        <p class="info-text">Ketik nama anak saat berada tepat di depan rumahnya, lalu tekan Simpan.</p>
+        <input type="text" id="nama-murid-baru" placeholder="Ketik Nama Anak (misal: Eca)">
+        <button class="btn btn-blue" onclick="simpanRumahMurid()">Simpan Titik Rumah Ini</button>
+        <div id="daftar-murid" style="margin-top:14px;"></div>
+      </div>
+
+      <button class="btn btn-outline" onclick="logout()">Keluar Mode Supir</button>
     </div>
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com"></script>
   <script>
-    const DB_URL = "https://antarjemput-pak-tony-default-rtdb.asia-southeast1.firebasedatabase.app/lokasi.json";
-    const PIN_ORTU = "1234";
+    const BASE_URL = "https://firebasedatabase.app";
     const PIN_SUPIR = "9999";
 
     let map, marker, watchId, intervalOrtu;
+    let muridAktif = null;
+    let dataMuridGlobal = {};
+    let sudahBunyi = {};
 
-    function cekPin() {
-      const pin = document.getElementById("pin-input").value.trim();
-      if (pin === PIN_ORTU) {
-        document.getElementById("login-box").classList.add("hidden");
-        document.getElementById("parent-box").classList.remove("hidden");
-        setTimeout(bukaPetaOrtu, 300);
-      } else if (pin === PIN_SUPIR) {
+    function bunyikanSuara(teks) {
+      if ('speechSynthesis' in window) {
+        const ucapan = new SpeechSynthesisUtterance(teks);
+        ucapan.lang = 'id-ID';
+        ucapan.rate = 1.0;
+        window.speechSynthesis.speak(ucapan);
+      }
+    }
+
+    function hitungJarak(lat1, lon1, lat2, lon2) {
+      const R = 6371e3;
+      const p1 = lat1 * Math.PI / 180;
+      const p2 = lat2 * Math.PI / 180;
+      const dp = (lat2 - lat1) * Math.PI / 180;
+      const dl = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dp/2) * Math.sin(dp/2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) * Math.sin(dl/2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function cekAkses() {
+      const input = document.getElementById("pin-input").value.trim().toLowerCase();
+      if (!input) return alert("Silakan ketik nama ananda terlebih dahulu.");
+
+      bunyikanSuara("");
+
+      if (input === PIN_SUPIR) {
         document.getElementById("login-box").classList.add("hidden");
         document.getElementById("driver-box").classList.remove("hidden");
-      } else {
-        alert("PIN salah! Silakan hubungi Pak Tony.");
+        muatDaftarMurid();
+        return;
       }
+
+      fetch(BASE_URL + "/murid/" + input + ".json")
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.nama) {
+            muridAktif = data;
+            document.getElementById("login-box").classList.add("hidden");
+            document.getElementById("parent-box").classList.remove("hidden");
+            document.getElementById("salam-ortu").innerText = "Halo, Wali Murid " + data.nama;
+            setTimeout(bukaPetaOrtu, 300);
+          } else {
+            alert("Nama tidak ditemukan. Pastikan ejaan sesuai atau hubungi Pak Tony.");
+          }
+        });
     }
 
     function logout() {
@@ -88,93 +141,73 @@ u<!DOCTYPE html>
       location.reload();
     }
 
-    function mulaiAntar() {
-      if (!navigator.geolocation) {
-        alert("Browser HP tidak mendukung GPS.");
-        return;
+    function simpanRumahMurid() {
+      const namaAsli = document.getElementById("nama-murid-baru").value.trim();
+      if (!namaAsli) return alert("Ketik nama anak terlebih dahulu!");
+      const kunci = namaAsli.toLowerCase();
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const data = {
+            nama: namaAsli,
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude
+          };
+          fetch(BASE_URL + "/murid/" + kunci + ".json", {
+            method: "PUT",
+            body: JSON.stringify(data)
+          }).then(() => {
+            alert("Titik rumah " + namaAsli + " berhasil disimpan!");
+            document.getElementById("nama-murid-baru").value = "";
+            muatDaftarMurid();
+          });
+        },
+        () => alert("Gagal mengambil lokasi GPS. Pastikan GPS aktif!"),
+        { enableHighAccuracy: true }
+      );
+    }
+
+    function muatDaftarMurid() {
+      fetch(BASE_URL + "/murid.json")
+        .then(res => res.json())
+        .then(data => {
+          dataMuridGlobal = data || {};
+          const wadah = document.getElementById("daftar-murid");
+          wadah.innerHTML = "";
+          Object.keys(dataMuridGlobal).forEach(kunci => {
+            const m = dataMuridGlobal[kunci];
+            wadah.innerHTML += `<div class="murid-item">
+              <span>🏠 <b>${m.nama}</b> (PIN: ${kunci})</span>
+              <button class="btn-del" onclick="hapusMurid('${kunci}')">Hapus</button>
+            </div>`;
+          });
+        });
+    }
+
+    function hapusMurid(kunci) {
+      if (confirm("Hapus data rumah " + kunci + "?")) {
+        fetch(BASE_URL + "/murid/" + kunci + ".json", { method: "DELETE" })
+          .then(() => muatDaftarMurid());
       }
+    }
+
+    function mulaiAntar() {
+      if (!navigator.geolocation) return alert("Browser tidak mendukung GPS.");
       document.getElementById("btn-start").classList.add("hidden");
       document.getElementById("btn-stop").classList.remove("hidden");
       document.getElementById("status-supir").className = "status-badge aktif";
       document.getElementById("status-supir").innerText = "Status: SEDANG JALAN (GPS Aktif)";
+      sudahBunyi = {};
 
       watchId = navigator.geolocation.watchPosition(
         (pos) => {
-          const data = {
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-            aktif: true,
-            waktu: new Date().toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-          };
-          document.getElementById("gps-info").innerText = "Lokasi terkirim pukul " + data.waktu + ". Biarkan layar terbuka.";
-          fetch(DB_URL, { method: "PUT", body: JSON.stringify(data) });
-        },
-        (err) => {
-          alert("Gagal mengambil GPS. Pastikan izin lokasi & GPS HP aktif!");
-        },
-        { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 }
-      );
-    }
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          const waktu = new Date().toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-    function stopAntar() {
-      if (watchId) navigator.geolocation.clearWatch(watchId);
-      fetch(DB_URL, {
-        method: "PATCH",
-        body: JSON.stringify({ aktif: false, waktu: new Date().toLocaleTimeString("id-ID") })
-      }).then(() => {
-        alert("Perjalanan selesai. Pelacakan dimatikan.");
-        location.reload();
-      });
-    }
+          document.getElementById("gps-info").innerText = "Lokasi terkirim pukul " + waktu + ".";
+          fetch(BASE_URL + "/lokasi.json", {
+            method: "PUT",
+            body: JSON.stringify({ lat: lat, lng: lng, aktif: true, waktu: waktu })
+          });
 
-    function bukaPetaOrtu() {
-      map = L.map("map").setView([-7.5995, 112.7850], 14);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap"
-      }).addTo(map);
-      map.invalidateSize();
-
-      ambilDataLokasi();
-      intervalOrtu = setInterval(ambilDataLokasi, 4000);
-    }
-
-    function ambilDataLokasi() {
-      fetch(DB_URL)
-        .then(res => res.json())
-        .then(data => {
-          if (!data || !data.lat) {
-            document.getElementById("status-ortu").className = "status-badge nonaktif";
-            document.getElementById("status-ortu").innerText = "Armada Belum Berangkat";
-            return;
-          }
-          const badge = document.getElementById("status-ortu");
-          if (data.aktif) {
-            badge.className = "status-badge aktif";
-            badge.innerText = "🟢 Armada Sedang Dalam Perjalanan";
-          } else {
-            badge.className = "status-badge nonaktif";
-            badge.innerText = "🔴 Armada Sedang Berhenti / Selesai";
-          }
-          document.getElementById("update-time").innerText = "Update terakhir: Pukul " + data.waktu + " WIB";
-
-          const posisi = [data.lat, data.lng];
-          if (!marker) {
-            const ikonMobil = L.divIcon({
-  html: '<div style="font-size:32px; line-height:1;">🚐</div>',
-  className: '',
-  iconSize: [32, 32],
-  iconAnchor: [16, 16]
-});
-marker = L.marker(posisi, { icon: ikonMobil }).addTo(map).bindPopup("<b>Armada Pak Tony</b>").openPopup();
-
-          } else {
-            marker.setLatLng(posisi);
-          }
-          map.setView(posisi, 16);
-
-          document.getElementById("link-macet").href = "https://google.com/maps/@" + data.lat + "," + data.lng + ",16z/data=!5m1!1e1";
-        });
-    }
-  </script>
-</body>
-</html>
