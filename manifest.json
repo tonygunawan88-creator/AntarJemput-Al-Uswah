@@ -8,7 +8,7 @@
   "icons": [
     {
       "src": "/Fix.jpg",
-      "sizes": "192x192 512x512 1254x1254",
+      "sizes": "192x192 512x512 1024x1024",
       "type": "image/jpg"
     }
   ]
