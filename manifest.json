@@ -1,13 +1,13 @@
 {
-  "name": "AntarJemput Al-Uswah Bangil",
-  "short_name": "AntarJemput PakTony",
+  "name": "AntarJemput Al-Uswah",
+  "short_name": "AntarJemput Al uswah",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f766e",
   "theme_color": "#0f766e",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3097/3097180.png",
+      "src": "https://github.com/tonygunawan88-creator/AntarJemput-Al-Uswah/blob/main/file_0000000066e0821191cdca5e85583973.png",
       "sizes": "512x512",
       "type": "image/png"
     }
