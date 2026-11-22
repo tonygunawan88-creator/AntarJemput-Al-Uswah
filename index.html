@@ -6,7 +6,6 @@
   <title>AntarJemput Pak Tony</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f766e">
-  
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { margin: 0; padding: 0; background: #f4f6f9; color: #1e293b; }
@@ -67,15 +66,15 @@
       </div>
       <div class="card">
         <h4 style="margin-top:0;">📍 Simpan Titik Jemput / Rumah</h4>
-        <p class="info-text">• Anak Perum: Simpan di <b>Gerbang Masuk</b> pakai kata <b>(Perum)</b>.<br>• Penutup Perum: Simpan di jalan raya luar gerbang dengan nama <b>keluar perum</b>.<br>• Anak Lainnya: Simpan seperti biasa.</p>
-        <input type="text" id="nama-murid-baru" placeholder="Contoh: Alesha Mecca (Perum) atau Ahmad">
+        <p class="info-text">• Gerbang Perum: Simpan 2 titik bernama <b>masuk perum</b> dan <b>keluar perum</b>.<br>• Rumah Anak: Simpan nama panggilan anak seperti biasa.</p>
+        <input type="text" id="nama-murid-baru" placeholder="Contoh: masuk perum / keluar perum / Eca">
         <button class="btn btn-blue" onclick="simpanRumahMurid()">Simpan Titik Lokasi Ini</button>
         <div id="daftar-murid" style="margin-top:14px;"></div>
       </div>
       <button class="btn btn-outline" onclick="logout()">Keluar Mode Supir</button>
     </div>
   </div>
-  <script>
+    <script>
     let leafletSiap = false;
     const css = document.createElement("link");
     css.rel = "stylesheet";
@@ -87,10 +86,14 @@
     s.onload = () => { leafletSiap = true; };
     document.head.appendChild(s);
 
-    const BASE_URL = "https://firebasedatabase.app";
+    const BASE_URL = "https://antarjemput-pak-tony-default-rtdb" + ".asia-southeast1.firebasedatabase.app";
     const PIN_SUPIR = "8989";
     const GOOGLE_TILE = "https://server.arcgisonline" + ".com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}";
+    
+    // Ganti atau lengkapi nama 7 anak perumahan di bawah ini (gunakan huruf kecil semua):
+    const ANAK_PERUM = new Array("eca", "gendis", "elsha", "aufa", "kian", "nabila");
 
+    let map, marker, watchId, intervalOrtu;
     let muridAktif = null;
     let dataMuridGlobal = {};
     let sudahBunyi = {};
@@ -98,7 +101,7 @@
     let mapSupir = null;
     let markerSupir = null;
     let garisRuteSupir = null;
-    let jejakRute = [];
+    let jejakRute = new Array();
     let totalJarak = 0;
     let sudahBunyiPerum = false;
     let statusMasukPerum = false;
@@ -158,12 +161,13 @@
     }
 
     function bukaPetaSupir() {
-  if (!leafletSiap) return setTimeout(bukaPetaSupir, 300);
-   if (mapSupir) return;
-   mapSupir = L.map("map-supir").setView(L.latLng(-7.5995, 112.7853), 15);
-   L.tileLayer(GOOGLE_TILE, { attribution: "© Google Maps" }).addTo(mapSupir);
-   mapSupir.invalidateSize();
- }
+      if (!leafletSiap) return setTimeout(bukaPetaSupir, 300);
+      if (mapSupir) return;
+      mapSupir = L.map("map-supir").setView(L.latLng(-7.5995, 112.7853), 15);
+      L.tileLayer(GOOGLE_TILE, { attribution: "© ArcGIS" }).addTo(mapSupir);
+      mapSupir.invalidateSize();
+    }
+
     function simpanRumahMurid() {
       const namaAsli = document.getElementById("nama-murid-baru").value.trim();
       if (!namaAsli) return alert("Ketik nama terlebih dahulu!");
@@ -193,10 +197,7 @@
           wadah.innerHTML = "";
           Object.keys(dataMuridGlobal).forEach(kunci => {
             const m = dataMuridGlobal[kunci];
-            wadah.innerHTML += `<div class="murid-item">
-              <span><b>${m.nama}</b><br><small>(PIN: ${kunci})</small></span>
-              <button class="btn-del" onclick="hapusMurid('${kunci}')">Hapus</button>
-            </div>`;
+            wadah.innerHTML += '<div class="murid-item"><span><b>' + m.nama + '</b><br><small>(PIN: ' + kunci + ')</small></span><button class="btn-del" onclick="hapusMurid(\'' + kunci + '\')">Hapus</button></div>';
           });
         });
     }
@@ -217,10 +218,11 @@
       sudahBunyi = {};
       sudahBunyiPerum = false;
       statusMasukPerum = false;
-      jejakRute = [];
+      jejakRute = new Array();
       totalJarak = 0;
       if (garisRuteSupir) { mapSupir.removeLayer(garisRuteSupir); garisRuteSupir = null; }
-if (mapSupir) mapSupir.invalidateSize();
+      if (mapSupir) mapSupir.invalidateSize();
+
       watchId = navigator.geolocation.watchPosition(
         (pos) => {
           const lat = pos.coords.latitude;
@@ -236,14 +238,14 @@ if (mapSupir) mapSupir.invalidateSize();
           }
 
           const jarakKm = (totalJarak / 1000).toFixed(2);
-          document.getElementById("gps-info").innerText = `Update: ${waktu} • Jarak Tempuh: ${jarakKm} km`;
+          document.getElementById("gps-info").innerText = "Update: " + waktu + " • Jarak Tempuh: " + jarakKm + " km";
 
           if (mapSupir) {
             const posisi = L.latLng(lat, lng);
             const ikonMobil = L.divIcon({ html: '<div style="font-size:28px; line-height:1;">🚐</div>', className: '', iconSize: L.point(32, 32), iconAnchor: L.point(16, 16) });
             if (!markerSupir) markerSupir = L.marker(posisi, { icon: ikonMobil }).addTo(mapSupir);
             else markerSupir.setLatLng(posisi);
-            mapSupir.setView(posisi, 16);
+            mapSupir.setView(posisi, 15);
 
             if (jejakRute.length > 1) {
               if (garisRuteSupir) garisRuteSupir.setLatLngs(jejakRute);
@@ -254,11 +256,11 @@ if (mapSupir) mapSupir.invalidateSize();
           Object.keys(dataMuridGlobal).forEach(kunci => {
             const m = dataMuridGlobal[kunci];
             const jarak = hitungJarak(lat, lng, m.lat, m.lng);
-            const namaBersih = m.nama.replace(/\(perum\)/gi, "").trim();
+            const isPerum = ANAK_PERUM.includes(kunci);
 
             if (kunci === "keluar perum") {
               if (jarak <= 60 && statusMasukPerum) statusMasukPerum = false;
-            } else if (kunci.includes("perum")) {
+            } else if (kunci === "masuk perum") {
               if (jarak <= 60 && !statusMasukPerum) {
                 statusMasukPerum = true;
                 if (!sudahBunyiPerum) {
@@ -266,10 +268,10 @@ if (mapSupir) mapSupir.invalidateSize();
                   bunyikanSuara(modePerjalanan === "pagi" ? "Memasuki area perumahan, bersiap jemput anak-anak" : "Assalamualaikum, memasuki area perumahan, mengantar anak-anak pulang");
                 }
               }
-            } else {
+            } else if (!isPerum) {
               if (jarak <= 500 && !sudahBunyi[kunci]) {
                 sudahBunyi[kunci] = true;
-                bunyikanSuara(modePerjalanan === "pagi" ? "Lima ratus meter lagi sampai di rumah " + namaBersih : "Assalamualaikum, insyaAllah " + namaBersih + " lima ratus meter lagi sampai rumah");
+                bunyikanSuara(modePerjalanan === "pagi" ? "Lima ratus meter lagi sampai di rumah " + m.nama : "Assalamualaikum, insyaAllah " + m.nama + " lima ratus meter lagi sampai rumah");
               }
             }
           });
@@ -284,19 +286,13 @@ if (mapSupir) mapSupir.invalidateSize();
       );
     }
 
-        function stopAntar() {
+    function stopAntar() {
       if (watchId) navigator.geolocation.clearWatch(watchId);
       const jarakAkhir = (totalJarak / 1000).toFixed(2);
       const jamSampai = new Date().toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' });
       fetch(BASE_URL + "/lokasi.json", {
         method: "PATCH",
-        body: JSON.stringify({
-          aktif: false,
-          masukPerum: false,
-          selesaiAntar: true,
-          mode: modePerjalanan,
-          waktu: jamSampai
-        })
+        body: JSON.stringify({ aktif: false, masukPerum: false, selesaiAntar: true, mode: modePerjalanan, waktu: jamSampai })
       }).then(() => {
         alert("Perjalanan selesai! Total jarak tempuh Anda: " + jarakAkhir + " km");
         location.reload();
@@ -305,8 +301,8 @@ if (mapSupir) mapSupir.invalidateSize();
 
     function bukaPetaOrtu() {
       if (!leafletSiap) return setTimeout(bukaPetaOrtu, 300);
-      map = L.map("map").setView(L.latLng(-7.5995, 112.7853), 14);
-      L.tileLayer(GOOGLE_TILE, { attribution: "© Google Maps" }).addTo(map);
+      map = L.map("map").setView(L.latLng(-7.5995, 112.7853), 15);
+      L.tileLayer(GOOGLE_TILE, { attribution: "© ArcGIS" }).addTo(map);
       map.invalidateSize();
       L.marker(L.latLng(muridAktif.lat, muridAktif.lng)).addTo(map).bindPopup("📍 Titik Rumah " + muridAktif.nama);
       ambilDataLokasi();
@@ -324,7 +320,7 @@ if (mapSupir) mapSupir.invalidateSize();
           }
 
           const isPulang = data.mode === "pulang";
-          const namaBersih = muridAktif.nama.replace(/\(perum\)/gi, "").trim();
+          const namaAnak = muridAktif.nama;
           const badge = document.getElementById("status-ortu");
 
           if (data.aktif) {
@@ -341,25 +337,25 @@ if (mapSupir) mapSupir.invalidateSize();
 
           if (!marker) marker = L.marker(posisi, { icon: ikonMobil }).addTo(map).bindPopup("<b>Armada Pak Tony</b>").openPopup();
           else marker.setLatLng(posisi);
-          map.setView(posisi, 16);
+          map.setView(posisi, 15);
 
           const jarak = hitungJarak(data.lat, data.lng, muridAktif.lat, muridAktif.lng);
-          const isPerum = muridAktif.nama.toLowerCase().includes("perum");
+          const isPerum = ANAK_PERUM.includes(namaAnak.toLowerCase());
           const harusPeringatan = isPerum ? (data.masukPerum === true) : (jarak <= 500);
           const banner = document.getElementById("notif-ortu");
 
           if (!data.aktif && data.selesaiAntar) {
             banner.style.background = "#dcfce7"; banner.style.borderColor = "#16a34a"; banner.style.color = "#166534";
-            banner.innerText = isPulang ? `✅ Alhamdulillah, pengantaran pulang selesai pukul ${data.waktu} WIB.` : `✅ Alhamdulillah, Ananda ${namaBersih} sudah tiba di sekolah pukul ${data.waktu} WIB!`;
+            banner.innerText = isPulang ? "✅ Alhamdulillah, pengantaran pulang selesai pukul " + data.waktu + " WIB." : "✅ Alhamdulillah, Ananda " + namaAnak + " sudah tiba di sekolah pukul " + data.waktu + " WIB!";
             banner.classList.remove("hidden");
           } else if (data.aktif && harusPeringatan) {
             banner.style.background = "#fef08a"; banner.style.borderColor = "#eab308"; banner.style.color = "#854d0e";
             const teksBanner = isPerum
-              ? (isPulang ? `🚨 Assalamualaikum, Armada Pak Tony sudah masuk perumahan mengantar ${namaBersih} pulang!` : `🚨 Armada Pak Tony sudah berada di dalam perumahan! Bersiap untuk ${namaBersih}!`)
-              : (isPulang ? `🚨 Assalamualaikum, insyaAllah ${namaBersih} 500 meter lagi sampai rumah!` : `🚨 Armada Pak Tony 500 meter lagi sampai di rumah ${namaBersih}!`);
+              ? (isPulang ? "🚨 Assalamualaikum, Armada Pak Tony sudah masuk perumahan mengantar " + namaAnak + " pulang!" : "🚨 Armada Pak Tony sudah berada di dalam perumahan! Bersiap untuk " + namaAnak + "!")
+              : (isPulang ? "🚨 Assalamualaikum, insyaAllah " + namaAnak + " 500 meter lagi sampai rumah!" : "🚨 Armada Pak Tony 500 meter lagi sampai di rumah " + namaAnak + "!");
             const teksSuara = isPerum
               ? (isPulang ? "Assalamualaikum, Armada Pak Tony sudah masuk area perumahan mengantar ananda pulang" : "Armada Pak Tony sudah masuk area perumahan, silakan bersiap")
-              : (isPulang ? "Assalamualaikum, insyaAllah " + namaBersih + " lima ratus meter lagi sampai rumah" : "Armada Pak Tony lima ratus meter lagi sampai di rumah " + namaBersih);
+              : (isPulang ? "Assalamualaikum, insyaAllah " + namaAnak + " lima ratus meter lagi sampai rumah" : "Armada Pak Tony lima ratus meter lagi sampai di rumah " + namaAnak);
 
             banner.innerText = teksBanner;
             banner.classList.remove("hidden");
@@ -369,7 +365,7 @@ if (mapSupir) mapSupir.invalidateSize();
             if (!isPerum && jarak > 600) sudahBunyi["ortu"] = false;
           }
 
-          document.getElementById("link-macet").href = "https://google.com@" + data.lat + "," + data.lng + ",16z";
+          document.getElementById("link-macet").href = "https://www.google" + ".com/maps/@" + data.lat + "," + data.lng + ",16z";
         });
     }
 
