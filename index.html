@@ -146,11 +146,11 @@
       location.reload();
     }
 
-    function bukaPetaSupir() {
+        function bukaPetaSupir() {
       if (mapSupir) return;
       mapSupir = L.map("map-supir").setView(L.latLng(-7.5995, 112.7853), 15);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap"
+      L.tileLayer("https://google.com{x}&y={y}&z={z}", {
+        attribution: "© Google Maps"
       }).addTo(mapSupir);
       mapSupir.invalidateSize();
     }
@@ -204,7 +204,7 @@
           .then(() => muatDaftarMurid());
       }
     }
-        function mulaiAntar() {
+                  function mulaiAntar() {
       if (!navigator.geolocation) return alert("Browser tidak mendukung GPS.");
       document.getElementById("btn-start").classList.add("hidden");
       document.getElementById("btn-stop").classList.remove("hidden");
@@ -229,7 +229,7 @@
 
           if (jejakRute.length > 0) {
             const titikTerakhir = jejakRute[jejakRute.length - 1];
-            const selisihJarak = hitungJarak(titikTerakhir, titikTerakhir, lat, lng);
+            const selisihJarak = hitungJarak(titikTerakhir[0], titikTerakhir[1], lat, lng);
             if (selisihJarak >= 5) {
               totalJarak += selisihJarak;
               jejakRute.push([lat, lng]);
@@ -247,7 +247,7 @@
               html: '<div style="font-size:28px; line-height:1;">🚐</div>',
               className: '',
               iconSize:,
-              iconAnchor:
+              iconAnchor: [14, 14]
             });
 
             if (!markerSupir) {
@@ -303,7 +303,7 @@
               aktif: true, 
               waktu: waktu,
               masukPerum: statusMasukPerum,
-              sampaiSekolah: false // Reset status sampai sekolah saat sedang jalan
+              sampaiSekolah: false
             })
           });
         },
@@ -322,7 +322,7 @@
         body: JSON.stringify({ 
           aktif: false, 
           masukPerum: false,
-          sampaiSekolah: true, // Tandai sudah tiba di sekolah
+          sampaiSekolah: true,
           waktu: jamSampai 
         })
       }).then(() => {
@@ -333,8 +333,8 @@
 
     function bukaPetaOrtu() {
       map = L.map("map").setView(L.latLng(-7.5995, 112.7853), 14);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap"
+      L.tileLayer("https://google.com{x}&y={y}&z={z}", {
+        attribution: "© Google Maps"
       }).addTo(map);
       map.invalidateSize();
 
@@ -370,7 +370,7 @@
             html: '<div style="font-size:32px; line-height:1;">🚐</div>',
             className: '',
             iconSize:,
-            iconAnchor:
+            iconAnchor: [16, 16]
           });
 
           if (!marker) {
@@ -386,16 +386,13 @@
 
           const banner = document.getElementById("notif-ortu");
           
-          // 1. Jika sudah menekan tombol Selesai Antar (Tiba di Sekolah)
           if (!data.aktif && data.sampaiSekolah) {
             banner.style.background = "#dcfce7";
             banner.style.borderColor = "#16a34a";
             banner.style.color = "#166534";
             banner.innerText = `✅ Alhamdulillah, Ananda ${muridAktif.nama} sudah tiba di sekolah pukul ${data.waktu} WIB!`;
             banner.classList.remove("hidden");
-          } 
-          // 2. Jika armada sedang jalan dan mendekati rumah/perumahan
-          else if (data.aktif && harusPeringatan) {
+          } else if (data.aktif && harusPeringatan) {
             banner.style.background = "#fef08a";
             banner.style.borderColor = "#eab308";
             banner.style.color = "#854d0e";
@@ -411,9 +408,7 @@
                 ? "Armada Pak Tony sudah masuk area perumahan, silakan bersiap" 
                 : "Armada Pak Tony sekitar dua menit lagi sampai di rumah " + muridAktif.nama);
             }
-          } 
-          // 3. Kondisi normal di jalan
-          else {
+          } else {
             banner.classList.add("hidden");
             if (!isPerum && jarak > 550) sudahBunyi["ortu"] = false;
           }
