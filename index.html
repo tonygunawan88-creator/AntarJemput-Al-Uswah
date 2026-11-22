@@ -75,13 +75,12 @@
       <button class="btn btn-outline" onclick="logout()">Keluar Mode Supir</button>
     </div>
   </div>
-  <script src="https://unpkg.com"></script>
-    <script>
-    const BASE_URL = "https://firebasedatabase.app";
+ <script src="https://unpkg.com"></script>
+ <script>
+   const BASE_URL = "https://antarjemput-pak-tony-default-rtdb" + ".asia-southeast1.firebasedatabase.app";
     const PIN_SUPIR = "8989";
-    const GOOGLE_TILE = "https://google.com" + "/vt/lyrs=m" + "&x={x}&y={y}&z={z}";
+   const GOOGLE_TILE = "https://arcgisonline.com" + "/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}";
 
-    let map, marker, watchId, intervalOrtu;
     let muridAktif = null;
     let dataMuridGlobal = {};
     let sudahBunyi = {};
@@ -211,7 +210,7 @@
       jejakRute = [];
       totalJarak = 0;
       if (garisRuteSupir) { mapSupir.removeLayer(garisRuteSupir); garisRuteSupir = null; }
-
+if (mapSupir) mapSupir.invalidateSize();
       watchId = navigator.geolocation.watchPosition(
         (pos) => {
           const lat = pos.coords.latitude;
