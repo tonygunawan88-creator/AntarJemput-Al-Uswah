@@ -76,18 +76,20 @@
     </div>
   </div>
   <script>
+    let leafletSiap = false;
     const css = document.createElement("link");
     css.rel = "stylesheet";
-    css.href = "https://" + "://unpkg.com";
+    css.href = "https://unpkg" + ".com/leaflet@1.9.4/dist/leaflet.css";
     document.head.appendChild(css);
 
     const s = document.createElement("script");
-    s.src = "https://" + "://unpkg.com";
+    s.src = "https://unpkg" + ".com/leaflet@1.9.4/dist/leaflet.js";
+    s.onload = () => { leafletSiap = true; };
     document.head.appendChild(s);
 
-    const BASE_URL = "https://" + "antarjemput-pak-tony-default-rtdb.asia-southeast1.firebasedatabase.app";
+    const BASE_URL = "https://firebasedatabase.app";
     const PIN_SUPIR = "8989";
-    const GOOGLE_TILE = "https://" + "://arcgisonline.com{z}/{y}/{x}";
+    const GOOGLE_TILE = "https://server.arcgisonline" + ".com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}";
 
     let muridAktif = null;
     let dataMuridGlobal = {};
@@ -156,12 +158,12 @@
     }
 
     function bukaPetaSupir() {
-      if (mapSupir) return;
-      mapSupir = L.map("map-supir").setView(L.latLng(-7.5995, 112.7853), 15);
-      L.tileLayer(GOOGLE_TILE, { attribution: "© Google Maps" }).addTo(mapSupir);
-      mapSupir.invalidateSize();
-    }
-
+  if (!leafletSiap) return setTimeout(bukaPetaSupir, 300);
+   if (mapSupir) return;
+   mapSupir = L.map("map-supir").setView(L.latLng(-7.5995, 112.7853), 15);
+   L.tileLayer(GOOGLE_TILE, { attribution: "© Google Maps" }).addTo(mapSupir);
+   mapSupir.invalidateSize();
+ }
     function simpanRumahMurid() {
       const namaAsli = document.getElementById("nama-murid-baru").value.trim();
       if (!namaAsli) return alert("Ketik nama terlebih dahulu!");
@@ -296,6 +298,7 @@ if (mapSupir) mapSupir.invalidateSize();
     }
 
     function bukaPetaOrtu() {
+      if (!leafletSiap) return setTimeout(bukaPetaOrtu, 300);
       map = L.map("map").setView(L.latLng(-7.5995, 112.7853), 14);
       L.tileLayer(GOOGLE_TILE, { attribution: "© Google Maps" }).addTo(map);
       map.invalidateSize();
