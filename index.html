@@ -76,11 +76,10 @@
     </div>
   </div>
   <script src="https://unpkg.com"></script>
-  <script>
-    const BASE_URL = "https://firebasedatabase.app";
-
+    <script>
     const BASE_URL = "https://firebasedatabase.app";
     const PIN_SUPIR = "8989";
+    const GOOGLE_TILE = "https://google.com" + "/vt/lyrs=m" + "&x={x}&y={y}&z={z}";
 
     let map, marker, watchId, intervalOrtu;
     let muridAktif = null;
@@ -118,7 +117,6 @@
     function cekAkses() {
       const input = document.getElementById("pin-input").value.trim().toLowerCase();
       if (!input) return alert("Silakan ketik nama ananda terlebih dahulu.");
-
       bunyikanSuara("");
 
       if (input === PIN_SUPIR) {
@@ -153,9 +151,7 @@
     function bukaPetaSupir() {
       if (mapSupir) return;
       mapSupir = L.map("map-supir").setView(L.latLng(-7.5995, 112.7853), 15);
-      L.tileLayer("https://google.com{x}&y={y}&z={z}", {
-        attribution: "© Google Maps"
-      }).addTo(mapSupir);
+      L.tileLayer(GOOGLE_TILE, { attribution: "© Google Maps" }).addTo(mapSupir);
       mapSupir.invalidateSize();
     }
 
@@ -166,19 +162,13 @@
 
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          const data = {
-            nama: namaAsli,
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude
-          };
-          fetch(BASE_URL + "/murid/" + kunci + ".json", {
-            method: "PUT",
-            body: JSON.stringify(data)
-          }).then(() => {
-            alert("Titik " + namaAsli + " berhasil disimpan!");
-            document.getElementById("nama-murid-baru").value = "";
-            muatDaftarMurid();
-          });
+          const data = { nama: namaAsli, lat: pos.coords.latitude, lng: pos.coords.longitude };
+          fetch(BASE_URL + "/murid/" + kunci + ".json", { method: "PUT", body: JSON.stringify(data) })
+            .then(() => {
+              alert("Titik " + namaAsli + " berhasil disimpan!");
+              document.getElementById("nama-murid-baru").value = "";
+              muatDaftarMurid();
+            });
         },
         () => alert("Gagal mengambil lokasi GPS. Pastikan GPS aktif!"),
         { enableHighAccuracy: true }
@@ -204,32 +194,23 @@
 
     function hapusMurid(kunci) {
       if (confirm("Hapus data " + kunci + "?")) {
-        fetch(BASE_URL + "/murid/" + kunci + ".json", { method: "DELETE" })
-          .then(() => muatDaftarMurid());
+        fetch(BASE_URL + "/murid/" + kunci + ".json", { method: "DELETE" }).then(() => muatDaftarMurid());
       }
     }
           function mulaiAntar(mode) {
       if (!navigator.geolocation) return alert("Browser tidak mendukung GPS.");
       modePerjalanan = mode;
-
       document.getElementById("btn-start-pagi").classList.add("hidden");
       document.getElementById("btn-start-pulang").classList.add("hidden");
       document.getElementById("btn-stop").classList.remove("hidden");
       document.getElementById("status-supir").className = "status-badge aktif";
-      document.getElementById("status-supir").innerText = mode === "pagi" 
-        ? "Status: JEMPUT KE SEKOLAH (GPS AKTIF)" 
-        : "Status: ANTAR PULANG (GPS AKTIF)";
-      
+      document.getElementById("status-supir").innerText = mode === "pagi" ? "Status: JEMPUT KE SEKOLAH (GPS AKTIF)" : "Status: ANTAR PULANG (GPS AKTIF)";
       sudahBunyi = {};
       sudahBunyiPerum = false;
       statusMasukPerum = false;
-
       jejakRute = [];
       totalJarak = 0;
-      if (garisRuteSupir) {
-        mapSupir.removeLayer(garisRuteSupir);
-        garisRuteSupir = null;
-      }
+      if (garisRuteSupir) { mapSupir.removeLayer(garisRuteSupir); garisRuteSupir = null; }
 
       watchId = navigator.geolocation.watchPosition(
         (pos) => {
@@ -240,10 +221,7 @@
           if (jejakRute.length > 0) {
             const titikTerakhir = jejakRute[jejakRute.length - 1];
             const selisihJarak = hitungJarak(titikTerakhir.lat, titikTerakhir.lng, lat, lng);
-            if (selisihJarak >= 5) {
-              totalJarak += selisihJarak;
-              jejakRute.push(L.latLng(lat, lng));
-            }
+            if (selisihJarak >= 5) { totalJarak += selisihJarak; jejakRute.push(L.latLng(lat, lng)); }
           } else {
             jejakRute.push(L.latLng(lat, lng));
           }
@@ -253,31 +231,14 @@
 
           if (mapSupir) {
             const posisi = L.latLng(lat, lng);
-            const ikonMobil = L.divIcon({
-              html: '<div style="font-size:28px; line-height:1;">🚐</div>',
-              className: '',
-              iconSize: L.point(32, 32),
-              iconAnchor: L.point(16, 16)
-            });
-
-            if (!markerSupir) {
-              markerSupir = L.marker(posisi, { icon: ikonMobil }).addTo(mapSupir);
-            } else {
-              markerSupir.setLatLng(posisi);
-            }
+            const ikonMobil = L.divIcon({ html: '<div style="font-size:28px; line-height:1;">🚐</div>', className: '', iconSize: L.point(32, 32), iconAnchor: L.point(16, 16) });
+            if (!markerSupir) markerSupir = L.marker(posisi, { icon: ikonMobil }).addTo(mapSupir);
+            else markerSupir.setLatLng(posisi);
             mapSupir.setView(posisi, 16);
 
             if (jejakRute.length > 1) {
-              if (garisRuteSupir) {
-                garisRuteSupir.setLatLngs(jejakRute);
-              } else {
-                garisRuteSupir = L.polyline(jejakRute, {
-                  color: '#fc4c02',
-                  weight: 5,
-                  opacity: 0.9,
-                  lineJoin: 'round'
-                }).addTo(mapSupir);
-              }
+              if (garisRuteSupir) garisRuteSupir.setLatLngs(jejakRute);
+              else garisRuteSupir = L.polyline(jejakRute, { color: '#fc4c02', weight: 5, opacity: 0.9, lineJoin: 'round' }).addTo(mapSupir);
             }
           }
 
@@ -287,40 +248,26 @@
             const namaBersih = m.nama.replace(/\(perum\)/gi, "").trim();
 
             if (kunci === "keluar perum") {
-              if (jarak <= 60 && statusMasukPerum) {
-                statusMasukPerum = false;
-              }
+              if (jarak <= 60 && statusMasukPerum) statusMasukPerum = false;
             } else if (kunci.includes("perum")) {
               if (jarak <= 60 && !statusMasukPerum) {
                 statusMasukPerum = true;
                 if (!sudahBunyiPerum) {
                   sudahBunyiPerum = true;
-                  bunyikanSuara(modePerjalanan === "pagi"
-                    ? "Memasuki area perumahan, bersiap jemput anak-anak"
-                    : "Assalamualaikum, memasuki area perumahan, mengantar anak-anak pulang");
+                  bunyikanSuara(modePerjalanan === "pagi" ? "Memasuki area perumahan, bersiap jemput anak-anak" : "Assalamualaikum, memasuki area perumahan, mengantar anak-anak pulang");
                 }
               }
             } else {
               if (jarak <= 500 && !sudahBunyi[kunci]) {
                 sudahBunyi[kunci] = true;
-                bunyikanSuara(modePerjalanan === "pagi"
-                  ? "Lima ratus meter lagi sampai di rumah " + namaBersih
-                  : "Assalamualaikum, insyaAllah " + namaBersih + " lima ratus meter lagi sampai rumah");
+                bunyikanSuara(modePerjalanan === "pagi" ? "Lima ratus meter lagi sampai di rumah " + namaBersih : "Assalamualaikum, insyaAllah " + namaBersih + " lima ratus meter lagi sampai rumah");
               }
             }
           });
 
           fetch(BASE_URL + "/lokasi.json", {
             method: "PUT",
-            body: JSON.stringify({ 
-              lat: lat, 
-              lng: lng, 
-              aktif: true, 
-              mode: modePerjalanan,
-              waktu: waktu,
-              masukPerum: statusMasukPerum,
-              selesaiAntar: false
-            })
+            body: JSON.stringify({ lat: lat, lng: lng, aktif: true, mode: modePerjalanan, waktu: waktu, masukPerum: statusMasukPerum, selesaiAntar: false })
           });
         },
         () => alert("Gagal mengambil GPS. Pastikan izin lokasi aktif!"),
@@ -332,30 +279,20 @@
       if (watchId) navigator.geolocation.clearWatch(watchId);
       const jarakAkhir = (totalJarak / 1000).toFixed(2);
       const jamSampai = new Date().toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' });
-      
       fetch(BASE_URL + "/lokasi.json", {
         method: "PATCH",
-        body: JSON.stringify({ 
-          aktif: false, 
-          masukPerum: false,
-          selesaiAntar: true,
-          mode: modePerjalanan,
-          waktu: jamSampai 
-        })
+        body: JSON.stringify({ aktif: false, masukPerum: false, selesaiAntar: true, mode: modePerjalanan, waktu: jamSampai })
       }).then(() => {
         alert(`Perjalanan selesai!\nTotal jarak tempuh Anda: ${jarakAkhir} km`);
         location.reload();
       });
-      }
-          function bukaPetaOrtu() {
+    }
+
+    function bukaPetaOrtu() {
       map = L.map("map").setView(L.latLng(-7.5995, 112.7853), 14);
-      L.tileLayer("https://google.com{x}&y={y}&z={z}", {
-        attribution: "© Google Maps"
-      }).addTo(map);
+      L.tileLayer(GOOGLE_TILE, { attribution: "© Google Maps" }).addTo(map);
       map.invalidateSize();
-
       L.marker(L.latLng(muridAktif.lat, muridAktif.lng)).addTo(map).bindPopup("📍 Titik Rumah " + muridAktif.nama);
-
       ambilDataLokasi();
       intervalOrtu = setInterval(ambilDataLokasi, 4000);
     }
@@ -376,79 +313,41 @@
 
           if (data.aktif) {
             badge.className = "status-badge aktif";
-            badge.innerText = isPulang 
-              ? "🟢 Armada Dalam Perjalanan Pulang" 
-              : "🟢 Armada Dalam Perjalanan ke Sekolah";
+            badge.innerText = isPulang ? "🟢 Armada Dalam Perjalanan Pulang" : "🟢 Armada Dalam Perjalanan ke Sekolah";
           } else {
             badge.className = "status-badge nonaktif";
-            if (data.selesaiAntar) {
-              badge.innerText = isPulang ? "✅ Pengantaran Pulang Selesai" : "✅ Armada Telah Tiba di Sekolah";
-            } else {
-              badge.innerText = "🔴 Armada Sedang Berhenti / Parkir";
-            }
+            badge.innerText = data.selesaiAntar ? (isPulang ? "✅ Pengantaran Pulang Selesai" : "✅ Armada Telah Tiba di Sekolah") : "🔴 Armada Sedang Berhenti / Parkir";
           }
 
           document.getElementById("update-time").innerText = "Update terakhir: Pukul " + data.waktu + " WIB";
-
           const posisi = L.latLng(data.lat, data.lng);
-          const ikonMobil = L.divIcon({
-            html: '<div style="font-size:32px; line-height:1;">🚐</div>',
-            className: '',
-            iconSize: L.point(36, 36),
-            iconAnchor: L.point(18, 18)
-          });
+          const ikonMobil = L.divIcon({ html: '<div style="font-size:32px; line-height:1;">🚐</div>', className: '', iconSize: L.point(36, 36), iconAnchor: L.point(18, 18) });
 
-          if (!marker) {
-            marker = L.marker(posisi, { icon: ikonMobil }).addTo(map).bindPopup("<b>Armada Pak Tony</b>").openPopup();
-          } else {
-            marker.setLatLng(posisi);
-          }
+          if (!marker) marker = L.marker(posisi, { icon: ikonMobil }).addTo(map).bindPopup("<b>Armada Pak Tony</b>").openPopup();
+          else marker.setLatLng(posisi);
           map.setView(posisi, 16);
 
           const jarak = hitungJarak(data.lat, data.lng, muridAktif.lat, muridAktif.lng);
           const isPerum = muridAktif.nama.toLowerCase().includes("perum");
           const harusPeringatan = isPerum ? (data.masukPerum === true) : (jarak <= 500);
-
           const banner = document.getElementById("notif-ortu");
-          
+
           if (!data.aktif && data.selesaiAntar) {
-            banner.style.background = "#dcfce7";
-            banner.style.borderColor = "#16a34a";
-            banner.style.color = "#166534";
-            banner.innerText = isPulang
-              ? `✅ Alhamdulillah, pengantaran pulang selesai pukul ${data.waktu} WIB.`
-              : `✅ Alhamdulillah, Ananda ${namaBersih} sudah tiba di sekolah pukul ${data.waktu} WIB!`;
+            banner.style.background = "#dcfce7"; banner.style.borderColor = "#16a34a"; banner.style.color = "#166534";
+            banner.innerText = isPulang ? `✅ Alhamdulillah, pengantaran pulang selesai pukul ${data.waktu} WIB.` : `✅ Alhamdulillah, Ananda ${namaBersih} sudah tiba di sekolah pukul ${data.waktu} WIB!`;
             banner.classList.remove("hidden");
           } else if (data.aktif && harusPeringatan) {
-            banner.style.background = "#fef08a";
-            banner.style.borderColor = "#eab308";
-            banner.style.color = "#854d0e";
+            banner.style.background = "#fef08a"; banner.style.borderColor = "#eab308"; banner.style.color = "#854d0e";
+            const teksBanner = isPerum
+              ? (isPulang ? `🚨 Assalamualaikum, Armada Pak Tony sudah masuk perumahan mengantar ${namaBersih} pulang!` : `🚨 Armada Pak Tony sudah berada di dalam perumahan! Bersiap untuk ${namaBersih}!`)
+              : (isPulang ? `🚨 Assalamualaikum, insyaAllah ${namaBersih} 500 meter lagi sampai rumah!` : `🚨 Armada Pak Tony 500 meter lagi sampai di rumah ${namaBersih}!`);
+            const teksSuara = isPerum
+              ? (isPulang ? "Assalamualaikum, Armada Pak Tony sudah masuk area perumahan mengantar ananda pulang" : "Armada Pak Tony sudah masuk area perumahan, silakan bersiap")
+              : (isPulang ? "Assalamualaikum, insyaAllah " + namaBersih + " lima ratus meter lagi sampai rumah" : "Armada Pak Tony lima ratus meter lagi sampai di rumah " + namaBersih);
 
-            let teksBanner = "";
-            let teksSuara = "";
-
-            if (isPerum) {
-              teksBanner = isPulang
-                ? `🚨 Assalamualaikum, Armada Pak Tony sudah masuk perumahan mengantar ${namaBersih} pulang!`
-                : `🚨 Armada Pak Tony sudah berada di dalam perumahan! Bersiap untuk ${namaBersih}!`;
-              teksSuara = isPulang
-                ? "Assalamualaikum, Armada Pak Tony sudah masuk area perumahan mengantar ananda pulang"
-                : "Armada Pak Tony sudah masuk area perumahan, silakan bersiap";
-            } else {
-              teksBanner = isPulang
-                ? `🚨 Assalamualaikum, insyaAllah ${namaBersih} 500 meter lagi sampai rumah!`
-                : `🚨 Armada Pak Tony 500 meter lagi sampai di rumah ${namaBersih}!`;
-              teksSuara = isPulang
-                ? "Assalamualaikum, insyaAllah " + namaBersih + " lima ratus meter lagi sampai rumah"
-                : "Armada Pak Tony lima ratus meter lagi sampai di rumah " + namaBersih;
-            }
-            
             banner.innerText = teksBanner;
             banner.classList.remove("hidden");
-            if (!sudahBunyi["ortu"]) {
-              sudahBunyi["ortu"] = true;
-              bunyikanSuara(teksSuara);
-            }
+            if (!sudahBunyi["ortu"]) { sudahBunyi["ortu"] = true; bunyikanSuara(teksSuara); }
           } else {
             banner.classList.add("hidden");
             if (!isPerum && jarak > 600) sudahBunyi["ortu"] = false;
@@ -458,9 +357,7 @@
         });
     }
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js');
-    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
   </script>
 </body>
 </html>
