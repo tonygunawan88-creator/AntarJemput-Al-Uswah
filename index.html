@@ -284,15 +284,21 @@ if (mapSupir) mapSupir.invalidateSize();
       );
     }
 
-    function stopAntar() {
+        function stopAntar() {
       if (watchId) navigator.geolocation.clearWatch(watchId);
       const jarakAkhir = (totalJarak / 1000).toFixed(2);
       const jamSampai = new Date().toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' });
       fetch(BASE_URL + "/lokasi.json", {
         method: "PATCH",
-        body: JSON.stringify({ aktif: false, masukPerum: false, selesaiAntar: true, mode: modePerjalanan, waktu: jamSampai })
+        body: JSON.stringify({
+          aktif: false,
+          masukPerum: false,
+          selesaiAntar: true,
+          mode: modePerjalanan,
+          waktu: jamSampai
+        })
       }).then(() => {
-        alert(`Perjalanan selesai!\nTotal jarak tempuh Anda: ${jarakAkhir} km`);
+        alert("Perjalanan selesai! Total jarak tempuh Anda: " + jarakAkhir + " km");
         location.reload();
       });
     }
