@@ -246,7 +246,7 @@ const PULANG_SAJA = new Array("azkia", "keanu", "fatih", "jefri");
             const ikonMobil = L.divIcon({ html: '<div style="font-size:28px; line-height:1;">🚐</div>', className: '', iconSize: L.point(32, 32), iconAnchor: L.point(16, 16) });
             if (!markerSupir) markerSupir = L.marker(posisi, { icon: ikonMobil }).addTo(mapSupir);
             else markerSupir.setLatLng(posisi);
-            mapSupir.setView(posisi, 15);
+            mapSupir.panTo(posisi);
 
             if (jejakRute.length > 1) {
               if (garisRuteSupir) garisRuteSupir.setLatLngs(jejakRute);
@@ -338,7 +338,7 @@ const PULANG_SAJA = new Array("azkia", "keanu", "fatih", "jefri");
 
           if (!marker) marker = L.marker(posisi, { icon: ikonMobil }).addTo(map).bindPopup("<b>Armada Pak Tony</b>").openPopup();
           else marker.setLatLng(posisi);
-          map.setView(posisi, 15);
+          map.panTo(posisi);
 
           const jarak = hitungJarak(data.lat, data.lng, muridAktif.lat, muridAktif.lng);
           const isPerum = ANAK_PERUM.includes(namaAnak.toLowerCase());
