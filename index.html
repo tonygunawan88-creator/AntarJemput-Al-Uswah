@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AntarJemput PakTony</title>
+  <title>AntarJemput Pak Tony</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f766e">
   <link rel="stylesheet" href="https://unpkg.com" />
@@ -36,14 +36,14 @@
 </head>
 <body>
   <div class="header">
-    <h1>AntarJemput Al-Uswah Bangil</h1>
+    <h1>AntarJemput Pak Tony</h1>
     <p>Armada PakTony • Pantau Lokasi Real-Time</p>
   </div>
   <div class="container">
     <div id="login-box" class="card">
       <h3 style="margin-top:0; text-align:center;">Masuk Aplikasi</h3>
       <p class="info-text" style="text-align:center;">Ketik <b>Nama Panggilan Ananda</b> untuk memantau armada.</p>
-      <input type="text" id="pin-input" placeholder="Contoh: Mecca">
+      <input type="text" id="pin-input" placeholder="Contoh: Alesha Mecca">
       <button class="btn btn-primary" onclick="cekAkses()">Masuk</button>
     </div>
     <div id="parent-box" class="card hidden">
@@ -237,13 +237,13 @@
 
           if (jejakRute.length > 0) {
             const titikTerakhir = jejakRute[jejakRute.length - 1];
-            const selisihJarak = hitungJarak(titikTerakhir[0], titikTerakhir[1], lat, lng);
+            const selisihJarak = hitungJarak(titikTerakhir.lat, titikTerakhir.lng, lat, lng);
             if (selisihJarak >= 5) {
               totalJarak += selisihJarak;
-              jejakRute.push([lat, lng]);
+              jejakRute.push(L.latLng(lat, lng));
             }
           } else {
-            jejakRute.push([lat, lng]);
+            jejakRute.push(L.latLng(lat, lng));
           }
 
           const jarakKm = (totalJarak / 1000).toFixed(2);
@@ -254,8 +254,8 @@
             const ikonMobil = L.divIcon({
               html: '<div style="font-size:28px; line-height:1;">🚐</div>',
               className: '',
-              iconSize:,
-              iconAnchor: [16, 16]
+              iconSize: L.point(32, 32),
+              iconAnchor: L.point(16, 16)
             });
 
             if (!markerSupir) {
@@ -392,8 +392,8 @@
           const ikonMobil = L.divIcon({
             html: '<div style="font-size:32px; line-height:1;">🚐</div>',
             className: '',
-            iconSize:,
-            iconAnchor: [18, 18]
+            iconSize: L.point(36, 36),
+            iconAnchor: L.point(18, 18)
           });
 
           if (!marker) {
