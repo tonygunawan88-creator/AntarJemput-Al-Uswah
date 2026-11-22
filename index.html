@@ -6,7 +6,7 @@
   <title>AntarJemput Pak Tony</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f766e">
-  <link rel="stylesheet" href="https://unpkg.com" />
+  
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { margin: 0; padding: 0; background: #f4f6f9; color: #1e293b; }
@@ -75,11 +75,19 @@
       <button class="btn btn-outline" onclick="logout()">Keluar Mode Supir</button>
     </div>
   </div>
- <script src="https://unpkg.com"></script>
- <script>
-   const BASE_URL = "https://antarjemput-pak-tony-default-rtdb" + ".asia-southeast1.firebasedatabase.app";
+  <script>
+    const css = document.createElement("link");
+    css.rel = "stylesheet";
+    css.href = "https://" + "://unpkg.com";
+    document.head.appendChild(css);
+
+    const s = document.createElement("script");
+    s.src = "https://" + "://unpkg.com";
+    document.head.appendChild(s);
+
+    const BASE_URL = "https://" + "antarjemput-pak-tony-default-rtdb.asia-southeast1.firebasedatabase.app";
     const PIN_SUPIR = "8989";
-   const GOOGLE_TILE = "https://arcgisonline.com" + "/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}";
+    const GOOGLE_TILE = "https://" + "://arcgisonline.com{z}/{y}/{x}";
 
     let muridAktif = null;
     let dataMuridGlobal = {};
