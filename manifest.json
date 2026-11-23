@@ -1,14 +1,14 @@
 {
-  "name": "Al Uswah Antar Jemput",
+  "name": "AntarJemput Pak Tony",
   "short_name": "AntarJemput",
-  "start_url": "/",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#0f766e",
   "theme_color": "#0f766e",
   "icons": [
     {
-      "src": "/Fix.png",
-      "sizes": "192x192 512x512 1024x1024",
+      "src": "Fix.png",
+      "sizes": "192x192 512x512",
       "type": "image/png"
     }
   ]
