@@ -65,25 +65,34 @@
         <button id="btn-start-pulang" class="btn btn-blue" onclick="mulaiAntar('pulang')">🏠 Antar Pulang (Dari Sekolah)</button>
         <button id="btn-stop" class="btn btn-danger hidden" onclick="stopAntar()">🛑 Selesai Antar</button>
 
-        <div id="ringkasan-strava" class="hidden" style="background: linear-gradient(135deg, #0f766e, #115e59); color: white; padding: 16px; border-radius: 12px; margin-top: 12px; text-align: center;">
-          <div id="teks-selesai-supir" style="font-weight: 700; font-size: 14px; background: rgba(255,255,255,0.15); padding: 8px; border-radius: 8px; margin-bottom: 12px;">
-            ✅ Alhamdulillah perjalanan sudah selesai!
+        <div id="ringkasan-strava" class="hidden" style="margin-top: 12px;">
+          <div id="kartu-foto-strava" style="position: relative; border-radius: 16px; overflow: hidden; background: linear-gradient(135deg, #0f766e, #064e3b); background-size: cover; background-position: center; color: white; padding: 20px 16px; box-shadow: 0 6px 18px rgba(0,0,0,0.2); text-align: center;">
+            <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.25), rgba(0,0,0,0.75)); z-index: 1;"></div>
+            <div style="position: relative; z-index: 2;">
+              <div style="font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; opacity: 0.9;">🚐 AntarJemput Pak Tony</div>
+              <div id="teks-selesai-supir" style="font-weight: 700; font-size: 14px; margin: 6px 0 10px;">
+                ✅ Alhamdulillah perjalanan sudah selesai!
+              </div>
+              <canvas id="kanvas-rute-strava" width="260" height="140" style="margin: 4px auto; display: block;"></canvas>
+              <div style="display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 12px; margin-top: 8px;">
+                <div>
+                  <div style="font-size: 11px; opacity: 0.85;">Jarak Total</div>
+                  <div id="strava-jarak" style="font-size: 20px; font-weight: 800;">0.00 km</div>
+                </div>
+                <div>
+                  <div style="font-size: 11px; opacity: 0.85;">Rata-Rata</div>
+                  <div id="strava-kecepatan" style="font-size: 20px; font-weight: 800;">0 km/j</div>
+                </div>
+                <div>
+                  <div style="font-size: 11px; opacity: 0.85;">Waktu Tempuh</div>
+                  <div id="strava-waktu" style="font-size: 20px; font-weight: 800;">0m 0s</div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div style="display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px;">
-            <div>
-              <div style="font-size: 11px; opacity: 0.85;">Jarak Total</div>
-              <div id="strava-jarak" style="font-size: 18px; font-weight: 800;">0.00 km</div>
-            </div>
-            <div>
-              <div style="font-size: 11px; opacity: 0.85;">Rata-Rata</div>
-              <div id="strava-kecepatan" style="font-size: 18px; font-weight: 800;">0 km/j</div>
-            </div>
-            <div>
-              <div style="font-size: 11px; opacity: 0.85;">Waktu Tempuh</div>
-              <div id="strava-waktu" style="font-size: 18px; font-weight: 800;">0m 0s</div>
-            </div>
-          </div>
-          <button class="btn" style="background: white; color: #0f766e; margin-top: 14px; margin-bottom: 0;" onclick="location.reload()">🔄 Kembali ke Awal (Setelah Screenshot)</button>
+          <input type="file" id="input-foto-strava" accept="image/*" style="display: none;" onchange="gantiFotoStrava(this)">
+          <button class="btn btn-blue" style="margin-top: 10px;" onclick="document.getElementById('input-foto-strava').click()">📸 Pilih Foto / Kamera Background</button>
+          <button class="btn btn-outline" onclick="location.reload()">🔄 Kembali ke Awal (Setelah Screenshot)</button>
         </div>
 
         <div id="map-supir"></div>
@@ -349,12 +358,64 @@
         document.getElementById("strava-kecepatan").innerText = kecepatanRata + " km/j";
         document.getElementById("strava-waktu").innerText = menit + "m " + detik + "s";
         document.getElementById("ringkasan-strava").classList.remove("hidden");
+        gambarRuteTransparan();
 
         if (mapSupir && garisRuteSupir && jejakRute.length > 1) {
           mapSupir.invalidateSize();
           mapSupir.fitBounds(garisRuteSupir.getBounds(), { padding: L.point(25, 25) });
         }
       });
+    }
+
+    function gantiFotoStrava(input) {
+      if (input.files && input.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById("kartu-foto-strava").style.backgroundImage = "url('" + e.target.result + "')";
+        };
+        reader.readAsDataURL(input.files.item(0));
+      }
+    }
+
+    function gambarRuteTransparan() {
+      const canvas = document.getElementById("kanvas-rute-strava");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (jejakRute.length < 2) return;
+
+      let minLat = 999, maxLat = -999, minLng = 999, maxLng = -999;
+      jejakRute.forEach(pt => {
+        if (pt.lat < minLat) minLat = pt.lat;
+        if (pt.lat > maxLat) maxLat = pt.lat;
+        if (pt.lng < minLng) minLng = pt.lng;
+        if (pt.lng > maxLng) maxLng = pt.lng;
+      });
+
+      const pad = 20;
+      const w = canvas.width - pad * 2;
+      const h = canvas.height - pad * 2;
+      const spanLat = Math.max(0.0001, maxLat - minLat);
+      const spanLng = Math.max(0.0001, maxLng - minLng);
+      const skala = Math.min(w / spanLng, h / spanLat);
+      const offsetX = pad + (w - spanLng * skala) / 2;
+      const offsetY = pad + (h - spanLat * skala) / 2;
+
+      ctx.strokeStyle = "#fc4c02";
+      ctx.lineWidth = 4;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.shadowColor = "rgba(0,0,0,0.6)";
+      ctx.shadowBlur = 4;
+      ctx.beginPath();
+
+      jejakRute.forEach((pt, idx) => {
+        const x = offsetX + (pt.lng - minLng) * skala;
+        const y = canvas.height - (offsetY + (pt.lat - minLat) * skala);
+        if (idx === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
       }
           function bukaPetaOrtu() {
       if (!leafletSiap) return setTimeout(bukaPetaOrtu, 300);
