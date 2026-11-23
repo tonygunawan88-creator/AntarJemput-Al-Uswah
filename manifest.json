@@ -7,8 +7,8 @@
   "theme_color": "#0f766e",
   "icons": [
     {
-      "src": "Fix.png",
-      "sizes": "192x192 512x512",
+      "src": "mobil.png",
+      "sizes": "1024x124",
       "type": "image/png"
     }
   ]
