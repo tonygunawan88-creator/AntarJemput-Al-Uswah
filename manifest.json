@@ -8,7 +8,7 @@
   "icons": [
     {
       "src": "mobil.png",
-      "sizes": "1024x124",
+      "sizes": "192x192 512x512 1024x124",
       "type": "image/png"
     }
   ]
