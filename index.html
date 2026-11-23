@@ -66,15 +66,11 @@
         <button id="btn-stop" class="btn btn-danger hidden" onclick="stopAntar()">🛑 Selesai Antar</button>
 
         <div id="ringkasan-strava" class="hidden" style="margin-top: 12px;">
-          <div id="kartu-foto-strava" style="position: relative; border-radius: 16px; overflow: hidden; background: linear-gradient(135deg, #0f766e, #064e3b); background-size: cover; background-position: center; color: white; padding: 20px 16px; box-shadow: 0 6px 18px rgba(0,0,0,0.2); text-align: center;">
-            <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.25), rgba(0,0,0,0.75)); z-index: 1;"></div>
+          <div id="kartu-foto-strava" style="position: relative; width: 100%; aspect-ratio: 9 / 16; border-radius: 16px; overflow: hidden; background: linear-gradient(135deg, #0f766e, #064e3b); background-size: cover; background-position: center; color: white; padding: 20px 16px; box-shadow: 0 6px 18px rgba(0,0,0,0.25); display: flex; flex-direction: column; justify-content: flex-end; text-align: center;">
+            <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 45%, rgba(0,0,0,0) 100%); z-index: 1;"></div>
             <div style="position: relative; z-index: 2;">
-              <div style="font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; opacity: 0.9;">🚐 AntarJemput Pak Tony</div>
-              <div id="teks-selesai-supir" style="font-weight: 700; font-size: 14px; margin: 6px 0 10px;">
-                ✅ Alhamdulillah perjalanan sudah selesai!
-              </div>
-              <canvas id="kanvas-rute-strava" width="260" height="140" style="margin: 4px auto; display: block;"></canvas>
-              <div style="display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 12px; margin-top: 8px;">
+              <canvas id="kanvas-rute-strava" width="260" height="150" style="margin: 0 auto 10px; display: block;"></canvas>
+              <div style="display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 12px;">
                 <div>
                   <div style="font-size: 11px; opacity: 0.85;">Jarak Total</div>
                   <div id="strava-jarak" style="font-size: 20px; font-weight: 800;">0.00 km</div>
@@ -92,7 +88,8 @@
           </div>
           <input type="file" id="input-foto-strava" accept="image/*" style="display: none;" onchange="gantiFotoStrava(this)">
           <button class="btn btn-blue" style="margin-top: 10px;" onclick="document.getElementById('input-foto-strava').click()">📸 Pilih Foto / Kamera Background</button>
-          <button class="btn btn-outline" onclick="location.reload()">🔄 Kembali ke Awal (Setelah Screenshot)</button>
+          <button class="btn btn-primary" onclick="simpanGambarStrava()">💾 Simpan Gambar ke Galeri</button>
+          <button class="btn btn-outline" onclick="location.reload()">🔄 Selesai & Kembali ke Awal</button>
         </div>
 
         <div id="map-supir"></div>
@@ -141,6 +138,7 @@
     let statusMasukPerum = false;
     let modePerjalanan = "pagi";
     let waktuMulai = null;
+    let fotoStravaDataUrl = null;
 
     function bunyikanSuara(teks) {
       if ('speechSynthesis' in window) {
@@ -242,7 +240,7 @@
         fetch(BASE_URL + "/murid/" + kunci + ".json", { method: "DELETE" }).then(() => muatDaftarMurid());
       }
     }
-          function mulaiAntar(mode) {
+                    function mulaiAntar(mode) {
       if (!navigator.geolocation) return alert("Browser tidak mendukung GPS.");
       modePerjalanan = mode;
       waktuMulai = Date.now();
@@ -329,9 +327,8 @@
         () => alert("Gagal mengambil GPS. Pastikan izin lokasi aktif!"),
         { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 }
       );
-    }
-
-    function stopAntar() {
+      }
+          function stopAntar() {
       if (watchId) navigator.geolocation.clearWatch(watchId);
       const jamSampai = new Date().toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' });
 
@@ -351,9 +348,6 @@
         document.getElementById("status-supir").className = "status-badge nonaktif";
         document.getElementById("status-supir").innerText = "Status: SELESAI (PARKIR)";
 
-        document.getElementById("teks-selesai-supir").innerText = modePerjalanan === "pagi"
-          ? "✅ Alhamdulillah perjalanan jemput ke sekolah sudah selesai!"
-          : "✅ Alhamdulillah perjalanan antar pulang sudah selesai!";
         document.getElementById("strava-jarak").innerText = jarakAkhir + " km";
         document.getElementById("strava-kecepatan").innerText = kecepatanRata + " km/j";
         document.getElementById("strava-waktu").innerText = menit + "m " + detik + "s";
@@ -371,7 +365,8 @@
       if (input.files && input.files.length > 0) {
         const reader = new FileReader();
         reader.onload = function(e) {
-          document.getElementById("kartu-foto-strava").style.backgroundImage = "url('" + e.target.result + "')";
+          fotoStravaDataUrl = e.target.result;
+          document.getElementById("kartu-foto-strava").style.backgroundImage = "url('" + fotoStravaDataUrl + "')";
         };
         reader.readAsDataURL(input.files.item(0));
       }
@@ -416,7 +411,75 @@
         else ctx.lineTo(x, y);
       });
       ctx.stroke();
+    }
+
+    function simpanGambarStrava() {
+      const c = document.createElement("canvas");
+      c.width = 1080;
+      c.height = 1920;
+      const ctx = c.getContext("2d");
+
+      const gambarSelesai = () => {
+        const grad = ctx.createLinearGradient(0, 900, 0, 1920);
+        grad.addColorStop(0, "rgba(0,0,0,0)");
+        grad.addColorStop(1, "rgba(0,0,0,0.88)");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 1080, 1920);
+
+        const kanvasKecil = document.getElementById("kanvas-rute-strava");
+        if (kanvasKecil) ctx.drawImage(kanvasKecil, 240, 1180, 600, 345);
+
+        ctx.strokeStyle = "rgba(255,255,255,0.35)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(80, 1580);
+        ctx.lineTo(1000, 1580);
+        ctx.stroke();
+
+        const jarakTxt = document.getElementById("strava-jarak").innerText;
+        const kecTxt = document.getElementById("strava-kecepatan").innerText;
+        const waktuTxt = document.getElementById("strava-waktu").innerText;
+
+        ctx.textAlign = "center";
+        ctx.fillStyle = "rgba(255,255,255,0.85)";
+        ctx.font = "32px sans-serif";
+        ctx.fillText("Jarak Total", 230, 1650);
+        ctx.fillText("Rata-Rata", 540, 1650);
+        ctx.fillText("Waktu Tempuh", 850, 1650);
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 56px sans-serif";
+        ctx.fillText(jarakTxt, 230, 1730);
+        ctx.fillText(kecTxt, 540, 1730);
+        ctx.fillText(waktuTxt, 850, 1730);
+
+        const link = document.createElement("a");
+        link.download = "Strava-PakTony-" + Date.now() + ".png";
+        link.href = c.toDataURL("image/png");
+        link.click();
+      };
+
+      if (fotoStravaDataUrl) {
+        const img = new Image();
+        img.onload = function() {
+          const rasioKartu = 1080 / 1920;
+          const rasioFoto = img.width / img.height;
+          let sx = 0, sy = 0, sw = img.width, sh = img.height;
+          if (rasioFoto > rasioKartu) { sw = img.height * rasioKartu; sx = (img.width - sw) / 2; }
+          else { sh = img.width / rasioKartu; sy = (img.height - sh) / 2; }
+          ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 1080, 1920);
+          gambarSelesai();
+        };
+        img.src = fotoStravaDataUrl;
+      } else {
+        const bgGrad = ctx.createLinearGradient(0, 0, 1080, 1920);
+        bgGrad.addColorStop(0, "#0f766e");
+        bgGrad.addColorStop(1, "#064e3b");
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, 1080, 1920);
+        gambarSelesai();
       }
+        }
           function bukaPetaOrtu() {
       if (!leafletSiap) return setTimeout(bukaPetaOrtu, 300);
       map = L.map("map").setView(L.latLng(-7.5995, 112.7853), 15);
