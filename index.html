@@ -750,5 +750,60 @@
 
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
   </script>
+  <!-- Banner Otomatis Instal Aplikasi (Android & iPhone) -->
+<div id="installBanner" style="display:none; position:fixed; bottom:20px; left:15px; right:15px; background:#0f5132; color:white; padding:16px; border-radius:14px; box-shadow:0 8px 20px rgba(0,0,0,0.3); z-index:9999; font-family:sans-serif; align-items:center; justify-content:space-between; gap:12px;">
+  <div style="flex:1;">
+    <div style="font-weight:bold; font-size:15px;">📲 Pasang Aplikasi Pak Tony</div>
+    <div id="installDesc" style="font-size:12px; opacity:0.95; margin-top:4px; line-height:1.4;">
+      Biar lebih mudah pantau & terima notifikasi jemputan
+    </div>
+  </div>
+  <div style="display:flex; gap:8px; align-items:center;">
+    <button id="btnInstallApp" style="background:#ffc107; color:#000; border:none; padding:10px 14px; border-radius:8px; font-weight:bold; font-size:13px; cursor:pointer; white-space:nowrap;">Instal</button>
+    <button onclick="document.getElementById('installBanner').style.display='none'" style="background:transparent; color:white; border:none; font-size:18px; cursor:pointer; padding:4px;">✕</button>
+  </div>
+</div>
+
+<script>
+  let deferredPrompt;
+  const installBanner = document.getElementById('installBanner');
+  const btnInstallApp = document.getElementById('btnInstallApp');
+  const installDesc = document.getElementById('installDesc');
+
+  // Cek apakah sudah dibuka dari aplikasi yang terinstal (Standalone)
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+  // 1. Deteksi Android (Chrome / Edge / Samsung Internet)
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (!isStandalone) {
+      installBanner.style.display = 'flex';
+    }
+  });
+
+  btnInstallApp.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      installBanner.style.display = 'none';
+    }
+    deferredPrompt = null;
+  });
+
+  window.addEventListener('appinstalled', () => {
+    installBanner.style.display = 'none';
+    deferredPrompt = null;
+  });
+
+  // 2. Deteksi iPhone / iPad (iOS Safari)
+  const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+  if (isIOS && !isStandalone) {
+    btnInstallApp.style.display = 'none'; // Sembunyikan tombol instal otomatis karena iOS harus manual
+    installDesc.innerHTML = 'Pengguna iPhone: tekan ikon <b>Bagikan (⬆️)</b> di bawah layar Safari, lalu pilih <b>Tambahkan ke Layar Utama</b>.';
+    installBanner.style.display = 'flex';
+  }
+</script>
 </body>
 </html>
