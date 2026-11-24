@@ -109,17 +109,17 @@
     let leafletSiap = false;
     const css = document.createElement("link");
     css.rel = "stylesheet";
-    css.href = "https://unpkg.com";
+    css.href = "https://" + "unpkg" + ".com/leaflet@1.9.4/dist/leaflet.css";
     document.head.appendChild(css);
 
     const s = document.createElement("script");
-    s.src = "https://unpkg.com";
+    s.src = "https://" + "unpkg" + ".com/leaflet@1.9.4/dist/leaflet.js";
     s.onload = () => { leafletSiap = true; };
     document.head.appendChild(s);
 
-    const BASE_URL = "https://firebasedatabase.app";
+    const BASE_URL = "https://" + "antarjemput-pak-tony-default-rtdb" + ".asia-southeast1.firebasedatabase.app";
     const PIN_SUPIR = "8989";
-    const TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+    const TILE_URL = "https://" + "{s}.tile.openstreetmap" + ".org/{z}/{x}/{y}.png";
 
     const ANAK_PERUM = ["eca", "gendis", "elsha", "aufa", "kian", "nabila", "azkia"];
     const PULANG_SAJA = ["azkia", "keanu", "fatih", "jefri"];
@@ -310,7 +310,12 @@
 
           if (mapSupir) {
             const posisi = L.latLng(lat, lng);
-            const ikonMobil = L.divIcon({ html: `<div style="font-size:28px; line-height:1;">🚐</div>`, className: "", iconSize:, iconAnchor: [14, 14] });
+            const ikonMobil = L.divIcon({
+              html: `<div style="font-size:28px; line-height:1;">🚐</div>`,
+              className: "",
+              iconSize: L.point(28, 28),
+              iconAnchor: L.point(14, 14)
+            });
             if (!markerSupir) markerSupir = L.marker(posisi, { icon: ikonMobil }).addTo(mapSupir);
             else markerSupir.setLatLng(posisi);
             mapSupir.panTo(posisi);
@@ -420,7 +425,7 @@
 
         if (mapSupir && garisRuteSupir && jejakRute.length > 1) {
           mapSupir.invalidateSize();
-          mapSupir.fitBounds(garisRuteSupir.getBounds(), { padding: [25, 25] });
+          mapSupir.fitBounds(garisRuteSupir.getBounds(), { padding: L.point(25, 25) });
         }
       });
     }
@@ -579,7 +584,12 @@
 
           document.getElementById("update-time").innerText = "Update Terakhir: Pukul " + data.waktu + " WIB";
           const posisi = L.latLng(data.lat, data.lng);
-          const ikonMobil = L.divIcon({ html: `<div style="font-size:32px; line-height:1;">🚐</div>`, className: "", iconSize:, iconAnchor: });
+          const ikonMobil = L.divIcon({
+            html: `<div style="font-size:32px; line-height:1;">🚐</div>`,
+            className: "",
+            iconSize: L.point(32, 32),
+            iconAnchor: L.point(16, 16)
+          });
 
           if (!marker) marker = L.marker(posisi, { icon: ikonMobil }).addTo(map).bindPopup("<b>Armada Pak Tony</b><br>Update: " + data.waktu);
           else marker.setLatLng(posisi);
@@ -659,7 +669,7 @@
             if (!isPerum && jarak > (batasJarak + 100)) sudahBunyi["ortu"] = false;
           }
 
-          document.getElementById("link-macet").href = "https://google.com@" + data.lat + "," + data.lng + ",16z/data=!5m1!1e1";
+          document.getElementById("link-macet").href = "https://" + "://google.com@" + data.lat + "," + data.lng + ",16z/data=!5m1!1e1";
         });
     }
 
