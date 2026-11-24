@@ -6,6 +6,20 @@
   <title>AntarJemput Pak Tony</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f766e">
+  <script>
+    const osScript = document.createElement("script");
+    osScript.src = "https://" + "cdn.onesignal" + ".com/sdks/web/v16/OneSignalSDK.page.js";
+    osScript.defer = true;
+    document.head.appendChild(osScript);
+
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "dbbed09d-6b5d-421e-a43e-342f5e5cac08",
+        safari_web_id: "web.onesignal.auto.4da9f50a-e5cd-4bfe-8999-da1af6f61d49",
+      });
+    });
+  </script>
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { margin: 0; padding: 0; background: #f4f6f9; color: #1e293b; }
@@ -40,9 +54,9 @@
   </div>
   <div class="container">
     <div id="login-box" class="card">
-      <h3 style="margin-top:0; text-align:center;">ٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ</h3>
+      <h3 style="margin-top:0; text-align:center;">Masuk Aplikasi</h3>
       <p class="info-text" style="text-align:center;">Ketik <b>Nama Panggilan Ananda</b> untuk memantau armada.</p>
-      <input type="text" id="pin-input" placeholder="Contoh: Mecca">
+      <input type="text" id="pin-input" placeholder="Contoh: Alesha Mecca">
       <button class="btn btn-primary" onclick="cekAkses()">Masuk</button>
     </div>
 
@@ -146,6 +160,33 @@
     let menitTerakhirNotif = {};
     let menitTerakhirNotifOrtu = 0;
 
+    const ONESIGNAL_APP_ID = "dbbed09d-6b5d-421e-a43e-342f5e5cac08";
+    const ONESIGNAL_REST_KEY = "os_v2_app_" + "3o7nbhlllvbb5jb6gqxv4xfmbc3ib7owuyyujxfog2nuqddpdsdjpoizrzbu5q474vxnes7nfktjlbnrsntlh4zrw6sd2mpnqfauzmi";
+    let sudahPushPerum = false;
+
+    async function kirimPushNotif(targetNamaAnak, judul, pesan) {
+      const targetId = targetNamaAnak.trim().toLowerCase();
+      try {
+        await fetch("https://" + "api.onesignal" + ".com/notifications", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Key " + ONESIGNAL_REST_KEY
+          },
+          body: JSON.stringify({
+            app_id: ONESIGNAL_APP_ID,
+            include_aliases: { external_id: [targetId] },
+            target_channel: "push",
+            headings: { en: judul },
+            contents: { en: pesan },
+            priority: 10
+          })
+        });
+      } catch (err) {
+        console.log("Push error:", err);
+      }
+    }
+
     function bunyikanSuara(teks) {
       if ('speechSynthesis' in window) {
         const ucapan = new SpeechSynthesisUtterance(teks);
@@ -164,8 +205,7 @@
       const a = Math.sin(dp/2) * Math.sin(dp/2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) * Math.sin(dl/2);
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
-
-    function cekAkses() {
+        function cekAkses() {
       const input = document.getElementById("pin-input").value.trim().toLowerCase();
       if (!input) return alert("Silakan ketik nama ananda terlebih dahulu.");
       bunyikanSuara("");
@@ -190,6 +230,13 @@
             document.getElementById("login-box").classList.add("hidden");
             document.getElementById("parent-box").classList.remove("hidden");
             document.getElementById("salam-ortu").innerText = "Halo, Wali Murid " + data.nama;
+
+            window.OneSignalDeferred = window.OneSignalDeferred || [];
+            OneSignalDeferred.push(async function(OneSignal) {
+              await OneSignal.Notifications.requestPermission();
+              await OneSignal.login(input);
+            });
+
             setTimeout(bukaPetaOrtu, 300);
           } else {
             alert("Nama tidak ditemukan. Pastikan ejaan sesuai atau hubungi Pak Tony.");
@@ -267,6 +314,7 @@
       document.getElementById("status-supir").innerText = mode === "pagi" ? "Status: JEMPUT KE SEKOLAH (GPS AKTIF)" : "Status: ANTAR PULANG (GPS AKTIF)";
       sudahBunyi = {};
       sudahBunyiPerum = false;
+      sudahPushPerum = false;
       statusMasukPerum = false;
       jejakRute = [];
       totalJarak = 0;
@@ -324,9 +372,8 @@
               if (garisRuteSupir) garisRuteSupir.setLatLngs(jejakRute);
               else garisRuteSupir = L.polyline(jejakRute, { color: "#fc4c02", weight: 5, opacity: 0.9, lineJoin: "round" }).addTo(mapSupir);
             }
-          }
-
-          let infoTungguAktif = null;
+    }
+              let infoTungguAktif = null;
 
           Object.keys(dataMuridGlobal).forEach(kunci => {
             const m = dataMuridGlobal[kunci];
@@ -348,6 +395,19 @@
                 if (!sudahBunyiPerum) {
                   sudahBunyiPerum = true;
                   bunyikanSuara(modePerjalanan === "pagi" ? "Memasuki area perumahan, bersiap jemput anak-anak" : "Assalamualaikum, memasuki area perumahan mengantar anak-anak pulang");
+                  if (!sudahPushPerum) {
+                    sudahPushPerum = true;
+                    ANAK_PERUM.forEach(namaPerum => {
+                      if (modePerjalanan === "pagi" && PULANG_SAJA.includes(namaPerum)) return;
+                      kirimPushNotif(
+                        namaPerum,
+                        "🚐 Armada Pak Tony Masuk Perumahan!",
+                        modePerjalanan === "pagi"
+                          ? "Armada Pak Tony sudah masuk area perumahan! Segera bersiap."
+                          : "Assalamualaikum, Armada Pak Tony sudah masuk perumahan mengantar ananda pulang!"
+                      );
+                    });
+                  }
                 }
               }
             } else {
@@ -356,6 +416,13 @@
                 bunyikanSuara(modePerjalanan === "pagi"
                   ? teksJarakSuara + " lagi sampai di rumah " + m.nama
                   : "Assalamualaikum, insyaAllah " + m.nama + " " + teksJarakSuara.toLowerCase() + " lagi sampai rumah");
+                kirimPushNotif(
+                  kunci,
+                  "🚐 Armada Pak Tony Sudah Dekat!",
+                  modePerjalanan === "pagi"
+                    ? "Armada Pak Tony sudah dekat dengan rumah! (" + (isNaura ? "150 meter" : "250 meter") + " lagi)"
+                    : "Assalamualaikum, insyaAllah " + m.nama + " " + (isNaura ? "150 meter" : "250 meter") + " lagi sampai rumah!"
+                );
               }
 
               if (jarak <= 40 && speedKmh < 3) {
@@ -369,6 +436,11 @@
                   if (menitTunggu > menitTerakhirNotif[kunci]) {
                     menitTerakhirNotif[kunci] = menitTunggu;
                     bunyikanSuara("Sudah menunggu " + menitTunggu + " menit di depan rumah " + m.nama);
+                    kirimPushNotif(
+                      kunci,
+                      "⏰ Jemputan Menunggu di Depan Rumah!",
+                      "Pak Tony sudah menunggu " + menitTunggu + " menit di depan rumahmu (" + m.nama + ")."
+                    );
                   }
                 }
               } else {
@@ -669,7 +741,7 @@
             if (!isPerum && jarak > (batasJarak + 100)) sudahBunyi["ortu"] = false;
           }
 
-          document.getElementById("link-macet").href = "https://" + "://google.com@" + data.lat + "," + data.lng + ",16z/data=!5m1!1e1";
+          document.getElementById("link-macet").href = "https://" + "www.google" + ".com/maps/@" + data.lat + "," + data.lng + ",16z/data=!5m1!1e1";
         });
     }
 
