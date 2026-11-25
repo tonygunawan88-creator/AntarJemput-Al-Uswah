@@ -3,72 +3,112 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AntarJemput Pak Tony</title>
+  <title>AntarJemput Al-Uswah Bangil (PakTony)</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0f766e">
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    const osScript = document.createElement("script");
-    osScript.src = "https://" + "cdn.onesignal" + ".com/sdks/web/v16/OneSignalSDK.page.js";
-    osScript.async = true;
-    osScript.onload = function() {
-      OneSignalDeferred.push(async function(OneSignal) {
-        await OneSignal.init({
-          appId: "dbbed09d-6b5d-421e-a43e-342f5e5cac08",
-          safari_web_id: "web.onesignal.auto.4da9f50a-e5cd-4bfe-8999-da1af6f61d49",
-          notifyButton: { enable: false }
-        });
-      });
-    };
-    document.head.appendChild(osScript);
-  </script>
+  <meta name="theme-color" content="#0d9488">
+  <link id="leaflet-css" rel="stylesheet" href="">
   <style>
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { margin: 0; padding: 0; background: #f4f6f9; color: #1e293b; }
-    .header { background: #0f766e; color: white; padding: 16px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .header h1 { margin: 0; font-size: 18px; font-weight: 700; }
-    .header p { margin: 4px 0 0; font-size: 12px; opacity: 0.9; }
-    .container { padding: 16px; max-width: 500px; margin: 0 auto; }
-    .card { background: white; border-radius: 14px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); margin-bottom: 16px; }
-    input { width: 100%; padding: 14px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 16px; margin-bottom: 12px; }
-    .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 8px; }
-    .btn-primary { background: #0f766e; color: white; }
-    .btn-blue { background: #0284c7; color: white; }
-    .btn-danger { background: #dc2626; color: white; }
-    .btn-outline { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
-    .btn-gmaps { background: #2563eb; color: white; display: block; text-align: center; text-decoration: none; padding: 12px; border-radius: 10px; font-weight: 600; margin-top: 12px; margin-bottom: 10px; }
-    #map, #map-supir { height: 300px; width: 100%; border-radius: 12px; margin-top: 12px; border: 1px solid #cbd5e1; z-index: 1; }
-    .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 10px; }
-    .aktif { background: #dcfce7; color: #166534; }
-    .nonaktif { background: #fee2e2; color: #991b1b; }
-    .notif-banner { background: #fef08a; border: 2px solid #eab308; color: #854d0e; padding: 12px; border-radius: 10px; font-weight: 700; text-align: center; margin-bottom: 12px; animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
-    .info-text { font-size: 13px; color: #475569; margin: 6px 0; }
-    .murid-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #e2e8f0; }
-    .btn-del { background: #fee2e2; color: #dc2626; border: none; padding: 6px 10px; border-radius: 6px; font-weight: 600; cursor: pointer; }
-    .hidden { display: none; }
+    * { box-sizing: border-box; font-family: "Comic Sans MS", "Chalkboard SE", "Quicksand", -apple-system, sans-serif; }
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f0f9ff;
+      background-image: radial-gradient(#bae6fd 2px, transparent 2px);
+      background-size: 24px 24px;
+      color: #1e293b;
+    }
+    .header {
+      background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%);
+      color: white;
+      padding: 22px 16px 26px;
+      text-align: center;
+      border-bottom-left-radius: 28px;
+      border-bottom-right-radius: 28px;
+      box-shadow: 0 6px 15px rgba(2, 132, 199, 0.25);
+      border-bottom: 5px solid #fbbf24;
+    }
+    .header h1 { margin: 0; font-size: 20px; font-weight: 800; text-shadow: 1px 2px 0px rgba(0,0,0,0.15); }
+    .header p { margin: 6px 0 0; font-size: 13px; background: rgba(255,255,255,0.2); display: inline-block; padding: 4px 12px; border-radius: 20px; }
+    .container { padding: 18px 16px; max-width: 500px; margin: 0 auto; }
+    .card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+      border: 2px solid #e0f2fe;
+      margin-bottom: 18px;
+    }
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2.5px solid #7dd3fc;
+      border-radius: 16px;
+      font-size: 16px;
+      margin-bottom: 14px;
+      background: #f8fafc;
+      outline: none;
+    }
+    input:focus { border-color: #f59e0b; background: #fffbeb; }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: transform 0.1s;
+    }
+    .btn:active { transform: translateY(3px); box-shadow: none !important; }
+    .btn-primary { background: #10b981; color: white; box-shadow: 0 4px 0 #059669; }
+    .btn-blue { background: #0ea5e9; color: white; box-shadow: 0 4px 0 #0284c7; }
+    .btn-orange { background: #f59e0b; color: white; box-shadow: 0 4px 0 #d97706; }
+    .btn-danger { background: #ef4444; color: white; box-shadow: 0 4px 0 #b91c1c; }
+    .btn-outline { background: #f1f5f9; color: #334155; border: 2px solid #cbd5e1; box-shadow: 0 3px 0 #cbd5e1; }
+    .btn-half { width: 48%; display: inline-block; }
+    #map, #map-supir { height: 280px; width: 100%; border-radius: 18px; margin-top: 12px; border: 3px solid #7dd3fc; z-index: 1; }
+    .status-badge { display: inline-block; padding: 7px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+    .aktif { background: #dcfce7; color: #15803d; border: 2px solid #86efac; }
+    .nonaktif { background: #fee2e2; color: #b91c1c; border: 2px solid #fca5a5; }
+    .notif-banner {
+      background: #fef08a;
+      border: 3px dashed #f59e0b;
+      color: #92400e;
+      padding: 14px;
+      border-radius: 18px;
+      font-weight: 800;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+    .info-text { font-size: 13px; color: #475569; margin: 4px 0 10px; }
+    .murid-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 2px dashed #e2e8f0; }
+    .btn-del { background: #fee2e2; color: #dc2626; border: none; padding: 7px 12px; border-radius: 12px; font-weight: bold; }
+    .hidden { display: none !important; }
+    #strava-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.9); z-index: 9999; overflow-y: auto; padding: 16px; text-align: center; }
+    #strava-canvas { width: 100%; max-width: 320px; border-radius: 18px; border: 4px solid #fbbf24; margin: 0 auto 12px; display: block; }
   </style>
 </head>
 <body>
   <div class="header">
-    <h1>AntarJemput Pak Tony</h1>
-    <p>Armada PakTony • Pantau Lokasi Real-Time</p>
+    <h1>🚌 AntarJemput Al-Uswah Bangil</h1>
+    <p>✨ Armada PakTony • Aman & Ceria ✨</p>
   </div>
   <div class="container">
     <div id="login-box" class="card">
-      <h3 style="margin-top:0; text-align:center;">ٱلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ ٱللَّٰهِ وَبَرَكَاتُهُ</h3>
-      <p class="info-text" style="text-align:center;">Ketik <b>Nama Panggilan Ananda</b> untuk memantau armada.</p>
+      <h3 style="margin-top:0; text-align:center;">🎒 Masuk Aplikasi</h3>
+      <p class="info-text" style="text-align:center;">Ketik Nama Panggilan Ananda untuk memantau armada.</p>
       <input type="text" id="pin-input" placeholder="Contoh: Mecca">
       <button class="btn btn-primary" onclick="cekAkses()">Masuk</button>
     </div>
 
     <div id="parent-box" class="card hidden">
-      <div id="notif-ortu" class="notif-banner hidden">🚨 Armada Pak Tony sudah dekat dengan rumah!</div>
+      <div id="notif-ortu" class="notif-banner hidden">Armada Pak Tony sudah dekat dengan rumah!</div>
       <h4 id="salam-ortu" style="margin:0 0 8px 0; color:#0f766e;">Halo, Wali Murid</h4>
       <div id="status-ortu" class="status-badge nonaktif">Menunggu data...</div>
-      <div class="info-text" id="update-time">Terakhir diperbarui: -</div>
+      <div id="update-time" class="info-text">Terakhir diperbarui: -</div>
       <div id="map"></div>
-      <a id="link-macet" href="#" target="_blank" class="btn-gmaps">🗺️ Cek Macet & Rute di Google Maps</a>
+      <a id="link-macet" href="#" target="_blank" class="btn btn-blue" style="display:block; text-align:center; text-decoration:none; margin-top:12px;">Cek Macet & Rute di Google Maps</a>
       <button class="btn btn-outline" onclick="logout()">Keluar</button>
     </div>
 
@@ -76,123 +116,96 @@
       <div class="card">
         <h3 style="margin-top:0;">🚐 Mode Supir (Pak Tony)</h3>
         <div id="status-supir" class="status-badge nonaktif">Status: Tidak Aktif (Parkir)</div>
-        <p class="info-text" id="gps-info">Pilih mode perjalanan di bawah saat mulai berangkat.</p>
-        <button id="btn-start-pagi" class="btn btn-primary" onclick="mulaiAntar('pagi')">🚀 Berangkat Jemput (Ke Sekolah)</button>
-        <button id="btn-start-pulang" class="btn btn-blue" onclick="mulaiAntar('pulang')">🏠 Antar Pulang (Dari Sekolah)</button>
-        <button id="btn-stop" class="btn btn-danger hidden" onclick="stopAntar()">🛑 Selesai Antar</button>
+        <div id="info-target" class="notif-banner hidden">Target Berikutnya: -</div>
+        <p class="info-text" id="gps-info">Isi nama anak izin (jika ada) sebelum berangkat.</p>
 
-        <div id="ringkasan-strava" class="hidden" style="margin-top: 12px;">
-          <div id="kartu-foto-strava" style="position: relative; width: 100%; aspect-ratio: 9 / 16; border-radius: 16px; overflow: hidden; background: linear-gradient(135deg, #0f766e, #064e3b); background-size: cover; background-position: center; color: white; padding: 20px 16px; box-shadow: 0 6px 18px rgba(0,0,0,0.25); display: flex; flex-direction: column; justify-content: flex-end; text-align: center;">
-            <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 45%, rgba(0,0,0,0) 100%); z-index: 1;"></div>
-            <div style="position: relative; z-index: 2;">
-              <canvas id="kanvas-rute-strava" width="800" height="600" style="width: 100%; height: 300px; object-fit: contain; margin: 0 auto 8px; display: block; filter: drop-shadow(0px 3px 8px rgba(0,0,0,0.85));"></canvas>
-              <div style="display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 12px;">
-                <div>
-                  <div style="font-size: 11px; opacity: 0.85;">Jarak Total</div>
-                  <div id="strava-jarak" style="font-size: 20px; font-weight: 800;">0.00 km</div>
-                </div>
-                <div>
-                  <div style="font-size: 11px; opacity: 0.85;">Rata-Rata</div>
-                  <div id="strava-kecepatan" style="font-size: 20px; font-weight: 800;">0 km/j</div>
-                </div>
-                <div>
-                  <div style="font-size: 11px; opacity: 0.85;">Waktu Tempuh</div>
-                  <div id="strava-waktu" style="font-size: 20px; font-weight: 800;">0m 0s</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <input type="file" id="input-foto-strava" accept="image/*" style="display: none;" onchange="gantiFotoStrava(this)">
-          <button class="btn btn-blue" style="margin-top: 10px;" onclick="document.getElementById('input-foto-strava').click()">📸 Pilih Foto / Kamera Background</button>
-          <button class="btn btn-primary" onclick="simpanGambarStrava()">💾 Simpan Gambar ke Galeri</button>
-          <button class="btn btn-outline" onclick="location.reload()">🔄 Selesai & Kembali ke Awal</button>
+        <div id="panel-pengaturan">
+          <p style="font-weight:bold; margin:8px 0 6px; font-size:14px;">Anak Tidak Ikut Hari Ini (Otomatis Reset Besok):</p>
+          <input type="text" id="input-skip" placeholder="Contoh: aqila, naura (kosongkan jika semua masuk)">
+          <button class="btn btn-outline" onclick="simpanSkipHariIni()">Simpan Daftar Izin Hari Ini</button>
+          <div id="info-skip" class="info-text" style="color:#dc2626; font-weight:bold;"></div>
         </div>
 
-        <div id="map-supir"></div>
+        <div id="panel-arah-perum" class="hidden" style="background:#fffbeb; border:2px dashed #f59e0b; padding:12px; border-radius:16px; margin-bottom:12px;">
+          <p style="font-weight:bold; margin:0 0 8px; font-size:14px; color:#92400e; text-align:center;">Pilih Arah Perumahan Sekarang:</p>
+          <div style="display:flex; justify-content:space-between;">
+            <button id="btn-kiri" class="btn btn-blue btn-half" onclick="pilihArahPerum('KIRI')">⬅️ Belok Kiri</button>
+            <button id="btn-kanan" class="btn btn-outline btn-half" onclick="pilihArahPerum('KANAN')">Belok Kanan ➡️</button>
+          </div>
+        </div>
+                <div style="display:flex; justify-content:space-between; margin-top:10px;">
+          <button id="btn-start-pagi" class="btn btn-primary btn-half" onclick="mulaiAntar('pagi')">Berangkat Pagi</button>
+          <button id="btn-start-pulang" class="btn btn-orange btn-half" onclick="mulaiAntar('pulang')">Antar Pulang</button>
+        </div>
+        <button id="btn-lewati" class="btn btn-outline hidden" onclick="geserTargetManual()">Sudah Naik / Lewati Target Ini</button>
+        <button id="btn-stop" class="btn btn-danger hidden" onclick="stopAntar()">Selesai Antar (Buat Ringkasan)</button>
+        <div id="map-supir" class="hidden"></div>
       </div>
 
       <div class="card">
-        <h4 style="margin-top:0;">📍 Simpan Titik Jemput / Rumah</h4>
-        <p class="info-text">• Gerbang Perum: Simpan 2 titik bernama <b>masuk perum</b> dan <b>keluar perum</b>.<br>• Rumah Anak: Simpan nama panggilan anak seperti biasa.</p>
-        <input type="text" id="nama-murid-baru" placeholder="Contoh: masuk perum / keluar perum / Eca">
+        <h4 style="margin-top:0;">📍 Simpan Titik Rumah / Gerbang Perum</h4>
+        <p class="info-text">Ketik nama anak (atau ketik: <b>masuk perum</b> / <b>keluar perum</b>) saat tepat di titiknya.</p>
+        <input type="text" id="nama-murid-baru" placeholder="Contoh: fatih / jefri / masuk perum">
         <button class="btn btn-blue" onclick="simpanRumahMurid()">Simpan Titik Lokasi Ini</button>
         <div id="daftar-murid" style="margin-top:14px;"></div>
       </div>
+
       <button class="btn btn-outline" onclick="logout()">Keluar Mode Supir</button>
     </div>
   </div>
-  <script>
-    let leafletSiap = false;
-    const css = document.createElement("link");
-    css.rel = "stylesheet";
-    css.href = "https://" + "unpkg" + ".com/leaflet@1.9.4/dist/leaflet.css";
-    document.head.appendChild(css);
 
-    const s = document.createElement("script");
-    s.src = "https://" + "unpkg" + ".com/leaflet@1.9.4/dist/leaflet.js";
-    s.onload = () => { leafletSiap = true; };
-    document.head.appendChild(s);
+  <div id="strava-modal" class="hidden">
+    <h3 style="color:white; margin-top:0;">Ringkasan Perjalanan</h3>
+    <canvas id="strava-canvas" width="1080" height="1920"></canvas>
+    <input type="file" id="bg-foto-input" accept="image/*" style="color:white; margin-bottom:10px;" onchange="muatFotoStrava(event)">
+    <button class="btn btn-primary" onclick="downloadStrava()">Simpan Gambar ke Galeri</button>
+    <button class="btn btn-outline" onclick="location.reload()">Tutup & Selesai</button>
+  </div>
+    <script>
+    document.getElementById("leaflet-css").href = "https://" + "unpkg" + ".com/leaflet@1.9.4/dist/leaflet.css";
+    const sLeaf = document.createElement("script");
+    sLeaf.src = "https://" + "unpkg" + ".com/leaflet@1.9.4/dist/leaflet.js";
+    document.head.appendChild(sLeaf);
 
-    const BASE_URL = "https://" + "antarjemput-pak-tony-default-rtdb" + ".asia-southeast1.firebasedatabase.app";
+    const BASE_URL = "https://" + "antarjemput-pak-tony-default-rtdb.asia-southeast1.firebasedatabase.app";
     const PIN_SUPIR = "8989";
-    const TILE_URL = "https://" + "{s}.tile.openstreetmap" + ".org/{z}/{x}/{y}.png";
 
-    const ANAK_PERUM = ["eca", "gendis", "elsha", "aufa", "kian", "nabila", "azkia"];
-    const PULANG_SAJA = ["azkia", "keanu", "fatih", "jefri"];
+    const URUTAN_PAGI = new Array("ali", "naura", "alesha mecca", "razka", "hamiz", "PERUM", "aqila");
+    const URUTAN_PULANG_NORMAL = new Array("aqila", "PERUM", "keanu", "razka", "hamiz", "alesha mecca", "jefri", "fatih", "naura", "ali");
+    const URUTAN_PULANG_JUMAT = new Array("aqila", "PERUM", "keanu", "nabila", "razka", "hamiz", "alesha mecca", "jefri", "fatih", "naura", "ali");
 
-    let map, marker, watchId, intervalOrtu;
+    const PERUM_PAGI = new Array("elsha", "eca", "aufa", "kian", "nabila", "gendis");
+    const PERUM_KIRI = new Array("nabila", "gendis", "azkia", "elsha", "eca", "aufa", "kian");
+    const PERUM_KANAN = new Array("kian", "aufa", "elsha", "eca", "azkia", "gendis", "nabila");
+    const PULANG_SAJA = new Array("azkia", "keanu", "fatih", "jefri");
+
+    let map, mapSupir, marker, markerSupir, garisRuteSupir, watchId, intervalOrtu;
     let muridAktif = null;
     let dataMuridGlobal = {};
-    let sudahBunyi = {};
-
-    let mapSupir = null;
-    let markerSupir = null;
-    let garisRuteSupir = null;
-    let jejakRute = [];
-    let totalJarak = 0;
-    let sudahBunyiPerum = false;
-    let statusMasukPerum = false;
     let modePerjalanan = "pagi";
-    let waktuMulai = null;
-    let fotoStravaDataUrl = null;
+    let arahPerum = "KIRI";
+    let daftarSkipHariIni = new Array();
+    let antreanAktif = new Array();
+    let statusDiDalamPerum = false;
+    let sudahBunyiOrtu = false;
+    let jejakRute = new Array();
+    let totalJarak = 0;
+    let waktuMulai = 0;
+    let fotoBgStrava = null;
 
-    let waktuBergerakDetik = 0;
-    let waktuGpsSebelumnya = null;
-    let waktuMulaiTunggu = {};
-    let menitTerakhirNotif = {};
-    let menitTerakhirNotifOrtu = 0;
+    function getTanggalHariIni() {
+      const d = new Date();
+      return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+    }
 
-    const ONESIGNAL_APP_ID = "dbbed09d-6b5d-421e-a43e-342f5e5cac08";
-    const ONESIGNAL_REST_KEY = "os_v2_app_" + "3o7nbhlllvbb5jb6gqxv4xfmbc3ib7owuyyujxfog2nuqddpdsdjpoizrzbu5q474vxnes7nfktjlbnrsntlh4zrw6sd2mpnqfauzmi";
-    let sudahPushPerum = false;
-
-    async function kirimPushNotif(targetNamaAnak, judul, pesan) {
-      const targetId = targetNamaAnak.trim().toLowerCase();
-      try {
-        await fetch("https://" + "api.onesignal" + ".com/notifications", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Key " + ONESIGNAL_REST_KEY
-          },
-          body: JSON.stringify({
-            app_id: ONESIGNAL_APP_ID,
-            include_aliases: { external_id: [targetId] },
-            target_channel: "push",
-            headings: { en: judul },
-            contents: { en: pesan },
-            priority: 10
-          })
-        });
-      } catch (err) {
-        console.log("Push error:", err);
-      }
+    function cekHariJumat() {
+      return new Date().getDay() === 5;
     }
 
     function bunyikanSuara(teks) {
-      if ('speechSynthesis' in window) {
+      if ("speechSynthesis" in window) {
         const ucapan = new SpeechSynthesisUtterance(teks);
-        ucapan.lang = 'id-ID';
+        ucapan.lang = "id-ID";
         ucapan.rate = 1.0;
         window.speechSynthesis.speak(ucapan);
       }
@@ -207,39 +220,28 @@
       const a = Math.sin(dp/2) * Math.sin(dp/2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) * Math.sin(dl/2);
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
-        function cekAkses() {
+
+    function cekAkses() {
       const input = document.getElementById("pin-input").value.trim().toLowerCase();
       if (!input) return alert("Silakan ketik nama ananda terlebih dahulu.");
       bunyikanSuara("");
-
-      if ("Notification" in window && Notification.permission !== "granted") {
-        Notification.requestPermission();
-      }
 
       if (input === PIN_SUPIR) {
         document.getElementById("login-box").classList.add("hidden");
         document.getElementById("driver-box").classList.remove("hidden");
         muatDaftarMurid();
-        setTimeout(bukaPetaSupir, 300);
+        muatSkipHariIni();
         return;
       }
 
-      fetch(BASE_URL + "/murid/" + input + ".json")
-        .then(res => res.json())
-        .then(data => {
+      fetch(BASE_URL + "/murid/" + encodeURIComponent(input) + ".json")
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
           if (data && data.nama) {
             muridAktif = data;
             document.getElementById("login-box").classList.add("hidden");
             document.getElementById("parent-box").classList.remove("hidden");
             document.getElementById("salam-ortu").innerText = "Halo, Wali Murid " + data.nama;
-                          window.OneSignalDeferred = window.OneSignalDeferred || [];
-            OneSignalDeferred.push(async function(OneSignal) {
-              const izin = await OneSignal.Notifications.requestPermission();
-              if (izin) {
-                await OneSignal.login(input);
-              }
-            });
-
             setTimeout(bukaPetaOrtu, 300);
           } else {
             alert("Nama tidak ditemukan. Pastikan ejaan sesuai atau hubungi Pak Tony.");
@@ -252,558 +254,392 @@
       if (intervalOrtu) clearInterval(intervalOrtu);
       location.reload();
     }
+          function pilihArahPerum(arah) {
+      arahPerum = arah;
+      document.getElementById("btn-kiri").className = (arah === "KIRI") ? "btn btn-blue btn-half" : "btn btn-outline btn-half";
+      document.getElementById("btn-kanan").className = (arah === "KANAN") ? "btn btn-blue btn-half" : "btn btn-outline btn-half";
+      updateInfoTarget();
+    }
 
-    function bukaPetaSupir() {
-      if (!leafletSiap) return setTimeout(bukaPetaSupir, 300);
-      if (mapSupir) return;
-      mapSupir = L.map("map-supir").setView([-7.5995, 112.7853], 15);
-      L.tileLayer(TILE_URL, { attribution: "© OpenStreetMap" }).addTo(mapSupir);
-      mapSupir.invalidateSize();
+    function muatSkipHariIni() {
+      fetch(BASE_URL + "/skip_harian.json")
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          if (data && data.tanggal === getTanggalHariIni() && data.nama) {
+            daftarSkipHariIni = data.nama.split(",");
+            document.getElementById("info-skip").innerText = "Izin hari ini: " + daftarSkipHariIni.join(", ");
+          } else {
+            daftarSkipHariIni = new Array();
+            document.getElementById("info-skip").innerText = "Semua anak masuk normal hari ini.";
+          }
+        });
+    }
+
+    function simpanSkipHariIni() {
+      const teks = document.getElementById("input-skip").value.toLowerCase();
+      const potongan = teks.split(",");
+      const hasil = new Array();
+      potongan.forEach(function(item) {
+        if (item.trim() !== "") hasil.push(item.trim());
+      });
+      fetch(BASE_URL + "/skip_harian.json", {
+        method: "PUT",
+        body: JSON.stringify({ tanggal: getTanggalHariIni(), nama: hasil.join(",") })
+      }).then(function() {
+        document.getElementById("input-skip").value = "";
+        muatSkipHariIni();
+        alert("Daftar izin hari ini tersimpan!");
+      });
     }
 
     function simpanRumahMurid() {
       const namaAsli = document.getElementById("nama-murid-baru").value.trim();
-      if (!namaAsli) return alert("Ketik nama terlebih dahulu!");
+      if (!namaAsli) return alert("Ketik nama anak terlebih dahulu!");
       const kunci = namaAsli.toLowerCase();
-
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const data = { nama: namaAsli, lat: pos.coords.latitude, lng: pos.coords.longitude };
-          fetch(BASE_URL + "/murid/" + kunci + ".json", { method: "PUT", body: JSON.stringify(data) })
-            .then(() => {
-              alert("Titik " + namaAsli + " berhasil disimpan!");
-              document.getElementById("nama-murid-baru").value = "";
-              muatDaftarMurid();
-            });
-        },
-        () => alert("Gagal mengambil lokasi GPS. Pastikan GPS aktif!"),
-        { enableHighAccuracy: true }
-      );
+      navigator.geolocation.getCurrentPosition(function(pos) {
+        const data = { nama: namaAsli, lat: pos.coords.latitude, lng: pos.coords.longitude };
+        fetch(BASE_URL + "/murid/" + encodeURIComponent(kunci) + ".json", {
+          method: "PUT",
+          body: JSON.stringify(data)
+        }).then(function() {
+          alert("Titik " + namaAsli + " berhasil disimpan!");
+          document.getElementById("nama-murid-baru").value = "";
+          muatDaftarMurid();
+        });
+      }, function() { alert("Gagal mengambil GPS."); }, { enableHighAccuracy: true });
     }
 
     function muatDaftarMurid() {
       fetch(BASE_URL + "/murid.json")
-        .then(res => res.json())
-        .then(data => {
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
           dataMuridGlobal = data || {};
           const wadah = document.getElementById("daftar-murid");
           wadah.innerHTML = "";
-          Object.keys(dataMuridGlobal).forEach(kunci => {
-            const m = dataMuridGlobal[kunci];
-            wadah.innerHTML += `<div class="murid-item"><span><b>${m.nama}</b><br><small>PIN: ${kunci}</small></span><button class="btn-del" onclick="hapusMurid('${kunci}')">Hapus</button></div>`;
+          Object.keys(dataMuridGlobal).forEach(function(kunci) {
+            const m = Reflect.get(dataMuridGlobal, kunci);
+            wadah.innerHTML += "<div class='murid-item'><span><b>" + m.nama + "</b><br><small>Kunci: " + kunci + "</small></span><button class='btn-del' onclick=\"hapusMurid('" + kunci + "')\">Hapus</button></div>";
           });
         });
     }
 
     function hapusMurid(kunci) {
       if (confirm("Hapus data " + kunci + "?")) {
-        fetch(BASE_URL + "/murid/" + kunci + ".json", { method: "DELETE" }).then(() => muatDaftarMurid());
+        fetch(BASE_URL + "/murid/" + encodeURIComponent(kunci) + ".json", { method: "DELETE" })
+          .then(function() { muatDaftarMurid(); });
       }
     }
-        function mulaiAntar(mode) {
+
+    function updateInfoTarget() {
+      const target = antreanAktif.at(0);
+      const box = document.getElementById("info-target");
+      const panelArah = document.getElementById("panel-arah-perum");
+      box.classList.remove("hidden");
+
+      if (modePerjalanan === "pulang" && target === "PERUM") {
+        panelArah.classList.remove("hidden");
+      } else {
+        panelArah.classList.add("hidden");
+      }
+
+      if (!target) {
+        box.innerText = "Semua anak dalam rute telah selesai!";
+      } else if (target === "PERUM") {
+        const infoJalur = (modePerjalanan === "pulang") ? arahPerum : "PAGI";
+        box.innerText = statusDiDalamPerum ? "Giliran: KELUAR PERUM (60m)" : "Giliran: MASUK PERUM (" + infoJalur + ")";
+      } else {
+        box.innerText = "Giliran Berikutnya: " + target.toUpperCase();
+      }
+    }
+
+    function geserTargetManual() {
+      statusDiDalamPerum = false;
+      antreanAktif.shift();
+      updateInfoTarget();
+    }
+
+    function bunyikanSuaraPerum() {
+      let jalur = PERUM_PAGI;
+      if (modePerjalanan === "pulang") {
+        jalur = (arahPerum === "KIRI") ? PERUM_KIRI : PERUM_KANAN;
+      }
+      const isJumatPulang = (modePerjalanan === "pulang") && cekHariJumat();
+      const daftarHadir = new Array();
+
+      jalur.forEach(function(anak) {
+        const tidakIzin = !daftarSkipHariIni.includes(anak);
+        const bolehMode = (modePerjalanan === "pulang") || !PULANG_SAJA.includes(anak);
+        const bukanNabilaJumat = !(isJumatPulang && anak === "nabila");
+        if (tidakIzin && bolehMode && bukanNabilaJumat) daftarHadir.push(anak);
+      });
+
+      if (daftarHadir.length > 0) {
+        bunyikanSuara("Perhatian, armada memasuki perumahan. Bersiap untuk " + daftarHadir.join(", "));
+      }
+    }
+
+    function mulaiAntar(mode) {
       if (!navigator.geolocation) return alert("Browser tidak mendukung GPS.");
       modePerjalanan = mode;
-      waktuMulai = Date.now();
-      waktuBergerakDetik = 0;
-      waktuGpsSebelumnya = Date.now();
-      waktuMulaiTunggu = {};
-      menitTerakhirNotif = {};
+      statusDiDalamPerum = false;
+      antreanAktif = new Array();
 
-      document.getElementById("ringkasan-strava").classList.add("hidden");
+      const sumber = (mode === "pagi") ? URUTAN_PAGI : (cekHariJumat() ? URUTAN_PULANG_JUMAT : URUTAN_PULANG_NORMAL);
+      sumber.forEach(function(nama) {
+        if (!daftarSkipHariIni.includes(nama)) antreanAktif.push(nama);
+      });
+
+      document.getElementById("panel-pengaturan").classList.add("hidden");
       document.getElementById("btn-start-pagi").classList.add("hidden");
       document.getElementById("btn-start-pulang").classList.add("hidden");
+      document.getElementById("btn-lewati").classList.remove("hidden");
       document.getElementById("btn-stop").classList.remove("hidden");
+      document.getElementById("map-supir").classList.remove("hidden");
       document.getElementById("status-supir").className = "status-badge aktif";
-      document.getElementById("status-supir").innerText = mode === "pagi" ? "Status: JEMPUT KE SEKOLAH (GPS AKTIF)" : "Status: ANTAR PULANG (GPS AKTIF)";
-      sudahBunyi = {};
-      sudahBunyiPerum = false;
-      sudahPushPerum = false;
-      statusMasukPerum = false;
-      jejakRute = [];
+      document.getElementById("status-supir").innerText = (mode === "pagi") ? "Status: JEMPUT PAGI" : "Status: ANTAR PULANG";
+
+      jejakRute = new Array();
       totalJarak = 0;
-      if (garisRuteSupir) { mapSupir.removeLayer(garisRuteSupir); garisRuteSupir = null; }
-      if (mapSupir) mapSupir.invalidateSize();
+      waktuMulai = Date.now();
+      updateInfoTarget();
 
-      watchId = navigator.geolocation.watchPosition(
-        (pos) => {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
-          const sekarang = Date.now();
-          const waktu = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      mapSupir = L.map("map-supir").setView(L.latLng(-7.5995, 112.7850), 15);
+      L.tileLayer("https://" + "{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(mapSupir);
+      garisRuteSupir = L.polyline(new Array(), { color: "#ea580c", weight: 5 }).addTo(mapSupir);
 
-          let speedKmh = pos.coords.speed ? pos.coords.speed * 3.6 : 0;
-          let selisihJarak = 0;
+      const ikonMobilSupir = L.divIcon({
+        html: "<div style='font-size:30px; line-height:1;'>🚐</div>",
+        className: "",
+        iconSize: L.point(30, 30),
+        iconAnchor: L.point(15, 15)
+      });
 
-          if (jejakRute.length > 0) {
-            const titikTerakhir = jejakRute[jejakRute.length - 1];
-            selisihJarak = hitungJarak(titikTerakhir.lat, titikTerakhir.lng, lat, lng);
-            if (selisihJarak > 5) {
-              totalJarak += selisihJarak;
-              jejakRute.push(L.latLng(lat, lng));
-            }
-          } else {
+      watchId = navigator.geolocation.watchPosition(function(pos) {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const waktu = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+
+        if (jejakRute.length > 0) {
+          const akhir = jejakRute.at(-1);
+          const selisih = hitungJarak(akhir.lat, akhir.lng, lat, lng);
+          if (selisih >= 5) {
+            totalJarak += selisih;
             jejakRute.push(L.latLng(lat, lng));
+            garisRuteSupir.addLatLng(L.latLng(lat, lng));
           }
+        } else {
+          jejakRute.push(L.latLng(lat, lng));
+        }
 
-          if (waktuGpsSebelumnya !== null) {
-            const deltaDetik = (sekarang - waktuGpsSebelumnya) / 1000;
-            if (!pos.coords.speed && deltaDetik > 0) {
-              speedKmh = (selisihJarak / deltaDetik) * 3.6;
+        if (!markerSupir) {
+          markerSupir = L.marker(L.latLng(lat, lng), { icon: ikonMobilSupir }).addTo(mapSupir);
+        } else {
+          markerSupir.setLatLng(L.latLng(lat, lng));
+        }
+        mapSupir.setView(L.latLng(lat, lng), 16);
+
+        const target = antreanAktif.at(0);
+        document.getElementById("gps-info").innerText = "GPS aktif pukul " + waktu;
+        fetch(BASE_URL + "/lokasi.json", {
+          method: "PUT",
+          body: JSON.stringify({ lat: lat, lng: lng, aktif: true, waktu: waktu, target: target || "selesai" })
+        });
+
+        if (!target) return;
+
+        if (target === "PERUM") {
+          const titikMasuk = Reflect.get(dataMuridGlobal, "masuk perum");
+          const titikKeluar = Reflect.get(dataMuridGlobal, "keluar perum");
+
+          if (!statusDiDalamPerum && titikMasuk) {
+            if (hitungJarak(lat, lng, titikMasuk.lat, titikMasuk.lng) <= 60) {
+              statusDiDalamPerum = true;
+              bunyikanSuaraPerum();
+              updateInfoTarget();
             }
-            if (speedKmh > 3 && deltaDetik < 60) {
-              waktuBergerakDetik += deltaDetik;
+          } else if (statusDiDalamPerum && titikKeluar) {
+            if (hitungJarak(lat, lng, titikKeluar.lat, titikKeluar.lng) <= 60) {
+              statusDiDalamPerum = false;
+              antreanAktif.shift();
+              updateInfoTarget();
             }
           }
-          waktuGpsSebelumnya = sekarang;
+          return;
+        }
 
-          const jarakKm = (totalJarak / 1000).toFixed(2);
-          document.getElementById("gps-info").innerText = "Update: " + waktu + " • Jarak Tempuh: " + jarakKm + " km";
+        const dataAnak = Reflect.get(dataMuridGlobal, target);
+        if (!dataAnak) return;
 
-          if (mapSupir) {
-            const posisi = L.latLng(lat, lng);
-            const ikonMobil = L.divIcon({
-              html: `<div style="font-size:28px; line-height:1;">🚐</div>`,
-              className: "",
-              iconSize: L.point(28, 28),
-              iconAnchor: L.point(14, 14)
-            });
-            if (!markerSupir) markerSupir = L.marker(posisi, { icon: ikonMobil }).addTo(mapSupir);
-            else markerSupir.setLatLng(posisi);
-            mapSupir.panTo(posisi);
-
-            if (jejakRute.length > 1) {
-              if (garisRuteSupir) garisRuteSupir.setLatLngs(jejakRute);
-              else garisRuteSupir = L.polyline(jejakRute, { color: "#fc4c02", weight: 5, opacity: 0.9, lineJoin: "round" }).addTo(mapSupir);
-            }
-    }
-              let infoTungguAktif = null;
-
-          Object.keys(dataMuridGlobal).forEach(kunci => {
-            const m = dataMuridGlobal[kunci];
-            const jarak = hitungJarak(lat, lng, m.lat, m.lng);
-            const isPerum = ANAK_PERUM.includes(kunci);
-            const isPulangSaja = PULANG_SAJA.includes(kunci);
-            const isNaura = kunci.includes("naura");
-
-            const batasJarak = isNaura ? 150 : 250;
-            const teksJarakSuara = isNaura ? "seratus lima puluh meter" : "dua ratus lima puluh meter";
-
-            if (modePerjalanan === "pagi" && isPulangSaja) return;
-
-            if (kunci === "keluar perum") {
-              if (jarak <= 60 && statusMasukPerum) statusMasukPerum = false;
-            } else if (kunci === "masuk perum") {
-              if (jarak <= 60 && !statusMasukPerum) {
-                statusMasukPerum = true;
-                if (!sudahBunyiPerum) {
-                  sudahBunyiPerum = true;
-                  bunyikanSuara(modePerjalanan === "pagi" ? "Memasuki area perumahan, bersiap jemput anak-anak" : "Assalamualaikum, memasuki area perumahan mengantar anak-anak pulang");
-                  if (!sudahPushPerum) {
-                    sudahPushPerum = true;
-                    ANAK_PERUM.forEach(namaPerum => {
-                      if (modePerjalanan === "pagi" && PULANG_SAJA.includes(namaPerum)) return;
-                      kirimPushNotif(
-                        namaPerum,
-                        "🚐 Armada Pak Tony Masuk Perumahan!",
-                        modePerjalanan === "pagi"
-                          ? "Armada Pak Tony sudah masuk area perumahan! Segera bersiap."
-                          : "Assalamualaikum, Armada Pak Tony sudah masuk perumahan mengantar ananda pulang!"
-                      );
-                    });
-                  }
-                }
-              }
-            } else {
-              if (!isPerum && jarak <= batasJarak && !sudahBunyi[kunci]) {
-                sudahBunyi[kunci] = true;
-                bunyikanSuara(modePerjalanan === "pagi"
-                  ? teksJarakSuara + " lagi sampai di rumah " + m.nama
-                  : "Assalamualaikum, insyaAllah " + m.nama + " " + teksJarakSuara.toLowerCase() + " lagi sampai rumah");
-                kirimPushNotif(
-                  kunci,
-                  "🚐 Armada Pak Tony Sudah Dekat!",
-                  modePerjalanan === "pagi"
-                    ? "Armada Pak Tony sudah dekat dengan rumah! (" + (isNaura ? "150 meter" : "250 meter") + " lagi)"
-                    : "Assalamualaikum, insyaAllah " + m.nama + " " + (isNaura ? "150 meter" : "250 meter") + " lagi sampai rumah!"
-                );
-              }
-
-              if (jarak <= 40 && speedKmh < 3) {
-                if (!waktuMulaiTunggu[kunci]) {
-                  waktuMulaiTunggu[kunci] = sekarang;
-                  menitTerakhirNotif[kunci] = 0;
-                }
-                const menitTunggu = Math.floor((sekarang - waktuMulaiTunggu[kunci]) / 60000);
-                if (menitTunggu >= 2) {
-                  infoTungguAktif = { kunci: kunci, nama: m.nama, menit: menitTunggu };
-                  if (menitTunggu > menitTerakhirNotif[kunci]) {
-                    menitTerakhirNotif[kunci] = menitTunggu;
-                    bunyikanSuara("Sudah menunggu " + menitTunggu + " menit di depan rumah " + m.nama);
-                    kirimPushNotif(
-                      kunci,
-                      "⏰ Jemputan Menunggu di Depan Rumah!",
-                      "Pak Tony sudah menunggu " + menitTunggu + " menit di depan rumahmu (" + m.nama + ")."
-                    );
-                  }
-                }
-              } else {
-                waktuMulaiTunggu[kunci] = null;
-                menitTerakhirNotif[kunci] = 0;
-              }
-            }
-          });
-
-          fetch(BASE_URL + "/lokasi.json", {
-            method: "PUT",
-            body: JSON.stringify({
-              lat: lat,
-              lng: lng,
-              aktif: true,
-              mode: modePerjalanan,
-              waktu: waktu,
-              masukPerum: statusMasukPerum,
-              tunggu: infoTungguAktif
-            })
-          });
-        },
-        () => alert("Gagal mengambil GPS. Pastikan izin lokasi aktif!"),
-        { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 }
-      );
-    }
-        function stopAntar() {
+        const jarak = hitungJarak(lat, lng, dataAnak.lat, dataAnak.lng);
+        const radius = (target === "naura") ? 400 : 250;
+        if (jarak <= radius) {
+          bunyikanSuara("Sebentar lagi sampai di rumah " + dataAnak.nama);
+          antreanAktif.shift();
+          updateInfoTarget();
+        }
+      }, function() { alert("Gagal mengambil GPS."); }, { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 });
+      }
+          function stopAntar() {
       if (watchId) navigator.geolocation.clearWatch(watchId);
-      const jamSampai = new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
-
-      const jarakKeKm = totalJarak / 1000;
-      const jarakAkhir = jarakKeKm.toFixed(2);
-      const durasiDetik = waktuMulai ? Math.max(1, Math.floor((Date.now() - waktuMulai) / 1000)) : 1;
-      const menit = Math.floor(durasiDetik / 60);
-      const detik = durasiDetik % 60;
-
-      const pembagiDetik = waktuBergerakDetik > 5 ? waktuBergerakDetik : durasiDetik;
-      const durasiJamBergerak = pembagiDetik / 3600;
-      const kecepatanRata = durasiJamBergerak > 0 ? (jarakKeKm / durasiJamBergerak).toFixed(1) : "0.0";
-
       fetch(BASE_URL + "/lokasi.json", {
         method: "PATCH",
-        body: JSON.stringify({ aktif: false, masukPerum: false, selesaiAntar: true, tunggu: null, mode: modePerjalanan, waktu: jamSampai })
-      }).then(() => {
-        document.getElementById("btn-stop").classList.add("hidden");
-        document.getElementById("status-supir").className = "status-badge nonaktif";
-        document.getElementById("status-supir").innerText = "Status: SELESAI (PARKIR)";
-
-        document.getElementById("strava-jarak").innerText = jarakAkhir + " km";
-        document.getElementById("strava-kecepatan").innerText = kecepatanRata + " km/j";
-        document.getElementById("strava-waktu").innerText = menit + "m " + detik + "s";
-        document.getElementById("ringkasan-strava").classList.remove("hidden");
-        gambarRuteTransparan();
-
-        if (mapSupir && garisRuteSupir && jejakRute.length > 1) {
-          mapSupir.invalidateSize();
-          mapSupir.fitBounds(garisRuteSupir.getBounds(), { padding: L.point(25, 25) });
-        }
+        body: JSON.stringify({ aktif: false, waktu: new Date().toLocaleTimeString("id-ID") })
+      }).then(function() {
+        document.getElementById("strava-modal").classList.remove("hidden");
+        gambarKartuStrava();
       });
     }
 
-    function gantiFotoStrava(input) {
-      if (input.files && input.files.length > 0) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          fotoStravaDataUrl = e.target.result;
-          document.getElementById("kartu-foto-strava").style.backgroundImage = `url('${fotoStravaDataUrl}')`;
-        };
-        reader.readAsDataURL(input.files.item(0));
-      }
-    }
-
-    function gambarRuteTransparan() {
-      const canvas = document.getElementById("kanvas-rute-strava");
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (jejakRute.length < 2) return;
-
-      let minLat = 999, maxLat = -999, minLng = 999, maxLng = -999;
-      jejakRute.forEach(pt => {
-        if (pt.lat < minLat) minLat = pt.lat;
-        if (pt.lat > maxLat) maxLat = pt.lat;
-        if (pt.lng < minLng) minLng = pt.lng;
-        if (pt.lng > maxLng) maxLng = pt.lng;
-      });
-
-      const pad = 25;
-      const w = canvas.width - pad * 2;
-      const h = canvas.height - pad * 2;
-      const spanLat = Math.max(0.0001, maxLat - minLat);
-      const spanLng = Math.max(0.0001, maxLng - minLng);
-      const skala = Math.min(w / spanLng, h / spanLat);
-      const offsetX = pad + (w - spanLng * skala) / 2;
-      const offsetY = pad + (h - spanLat * skala) / 2;
-
-      ctx.strokeStyle = "#fc4c02";
-      ctx.lineWidth = 10;
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
-      ctx.shadowColor = "rgba(0,0,0,0.65)";
-      ctx.shadowBlur = 8;
-      ctx.beginPath();
-
-      jejakRute.forEach((pt, idx) => {
-        const x = offsetX + (pt.lng - minLng) * skala;
-        const y = canvas.height - (offsetY + (pt.lat - minLat) * skala);
-        if (idx === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.stroke();
-    }
-
-    function simpanGambarStrava() {
-      const c = document.createElement("canvas");
-      c.width = 1080;
-      c.height = 1920;
-      const ctx = c.getContext("2d");
-
-      const gambarSelesai = () => {
-        const grad = ctx.createLinearGradient(0, 800, 0, 1920);
-        grad.addColorStop(0, "rgba(0,0,0,0)");
-        grad.addColorStop(1, "rgba(0,0,0,0.88)");
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 800, 1080, 1920);
-
-        const kanvasKecil = document.getElementById("kanvas-rute-strava");
-        if (kanvasKecil) ctx.drawImage(kanvasKecil, 120, 880, 840, 630);
-
-        ctx.strokeStyle = "rgba(255,255,255,0.35)";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(80, 1580);
-        ctx.lineTo(1000, 1580);
-        ctx.stroke();
-
-        const jarakTxt = document.getElementById("strava-jarak").innerText;
-        const kecTxt = document.getElementById("strava-kecepatan").innerText;
-        const waktuTxt = document.getElementById("strava-waktu").innerText;
-
-        ctx.textAlign = "center";
-        ctx.fillStyle = "rgba(255,255,255,0.85)";
-        ctx.font = "32px sans-serif";
-        ctx.fillText("Jarak Total", 230, 1650);
-        ctx.fillText("Rata-Rata", 540, 1650);
-        ctx.fillText("Waktu Tempuh", 850, 1650);
-
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 56px sans-serif";
-        ctx.fillText(jarakTxt, 230, 1730);
-        ctx.fillText(kecTxt, 540, 1730);
-        ctx.fillText(waktuTxt, 850, 1730);
-
-        const link = document.createElement("a");
-        link.download = "Strava-PakTony-" + Date.now() + ".png";
-        link.href = c.toDataURL("image/png");
-        link.click();
-      };
-
-      if (fotoStravaDataUrl) {
+    function muatFotoStrava(event) {
+      const file = event.target.files.item(0);
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
         const img = new Image();
-        img.onload = function() {
-          const rasioKartu = 1080 / 1920;
-          const rasioFoto = img.width / img.height;
-          let sx = 0, sy = 0, sw = img.width, sh = img.height;
-          if (rasioFoto > rasioKartu) { sw = img.height * rasioKartu; sx = (img.width - sw) / 2; }
-          else { sh = img.width / rasioKartu; sy = (img.height - sh) / 2; }
-          ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 1080, 1920);
-          gambarSelesai();
-        };
-        img.src = fotoStravaDataUrl;
-      } else {
-        const bgGrad = ctx.createLinearGradient(0, 0, 1080, 1920);
-        bgGrad.addColorStop(0, "#0f766e");
-        bgGrad.addColorStop(1, "#064e3b");
-        ctx.fillStyle = bgGrad;
-        ctx.fillRect(0, 0, 1080, 1920);
-        gambarSelesai();
-      }
+        img.onload = function() { fotoBgStrava = img; gambarKartuStrava(); };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
     }
-        function bukaPetaOrtu() {
-      if (!leafletSiap) return setTimeout(bukaPetaOrtu, 300);
-      map = L.map("map").setView([-7.5995, 112.7853], 15);
-      L.tileLayer(TILE_URL, { attribution: "© OpenStreetMap" }).addTo(map);
+
+    function gambarKartuStrava() {
+      const canvas = document.getElementById("strava-canvas");
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, 1080, 1920);
+
+      if (fotoBgStrava) {
+        ctx.drawImage(fotoBgStrava, 0, 0, 1080, 1920);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+        ctx.fillRect(0, 0, 1080, 1920);
+      } else {
+        ctx.fillStyle = "#0f172a";
+        ctx.fillRect(0, 0, 1080, 1920);
+      }
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 54px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("ANTAR JEMPUT AL-USWAH", 540, 180);
+      ctx.font = "36px sans-serif";
+      ctx.fillStyle = "#fb923c";
+      ctx.fillText("Armada Pak Tony - " + getTanggalHariIni(), 540, 240);
+
+      if (jejakRute.length > 1) {
+        let minLat = 999, maxLat = -999, minLng = 999, maxLng = -999;
+        jejakRute.forEach(function(pt) {
+          if (pt.lat < minLat) minLat = pt.lat;
+          if (pt.lat > maxLat) maxLat = pt.lat;
+          if (pt.lng < minLng) minLng = pt.lng;
+          if (pt.lng > maxLng) maxLng = pt.lng;
+        });
+        const spanLat = (maxLat - minLat) || 0.001;
+        const spanLng = (maxLng - minLng) || 0.001;
+
+        ctx.beginPath();
+        ctx.strokeStyle = "#f97316";
+        ctx.lineWidth = 14;
+        ctx.lineCap = "round";
+        jejakRute.forEach(function(pt, idx) {
+          const x = 180 + ((pt.lng - minLng) / spanLng) * 720;
+          const y = 1150 - ((pt.lat - minLat) / spanLat) * 650;
+          if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      }
+
+      const km = (totalJarak / 1000).toFixed(2);
+      const detik = Math.max(1, Math.floor((Date.now() - waktuMulai) / 1000));
+      const menit = Math.floor(detik / 60);
+      const kec = ((totalJarak / 1000) / (detik / 3600)).toFixed(1);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 72px sans-serif";
+      ctx.fillText(km + " km", 540, 1420);
+      ctx.font = "34px sans-serif";
+      ctx.fillStyle = "#cbd5e1";
+      ctx.fillText("Jarak Total", 540, 1470);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 56px sans-serif";
+      ctx.fillText(menit + " mnt   |   " + kec + " km/j", 540, 1620);
+      ctx.font = "32px sans-serif";
+      ctx.fillStyle = "#cbd5e1";
+      ctx.fillText("Waktu Tempuh         Kecepatan Rata-rata", 540, 1670);
+    }
+
+    function downloadStrava() {
+      const link = document.createElement("a");
+      link.download = "Rute-PakTony-" + getTanggalHariIni() + ".png";
+      link.href = document.getElementById("strava-canvas").toDataURL("image/png");
+      link.click();
+    }
+
+    function bukaPetaOrtu() {
+      map = L.map("map").setView(L.latLng(-7.5995, 112.7850), 14);
+      L.tileLayer("https://" + "{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
       map.invalidateSize();
-      L.marker([muridAktif.lat, muridAktif.lng]).addTo(map).bindPopup("📍 Titik Rumah " + muridAktif.nama);
+      const ikonRumah = L.divIcon({
+        html: "<div style='font-size:28px; line-height:1;'>🏠</div>",
+        className: "",
+        iconSize: L.point(28, 28),
+        iconAnchor: L.point(14, 14)
+      });
+      L.marker(L.latLng(muridAktif.lat, muridAktif.lng), { icon: ikonRumah }).addTo(map).bindPopup("Rumah " + muridAktif.nama);
       ambilDataLokasi();
       intervalOrtu = setInterval(ambilDataLokasi, 4000);
     }
 
     function ambilDataLokasi() {
       fetch(BASE_URL + "/lokasi.json")
-        .then(res => res.json())
-        .then(data => {
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
           if (!data || !data.lat) {
             document.getElementById("status-ortu").className = "status-badge nonaktif";
             document.getElementById("status-ortu").innerText = "Armada Belum Berangkat";
             return;
           }
-
-          const isPulang = data.mode === "pulang";
-          const namaAnak = muridAktif.nama;
-          const kunciAnak = namaAnak.toLowerCase();
           const badge = document.getElementById("status-ortu");
+          badge.className = data.aktif ? "status-badge aktif" : "status-badge nonaktif";
+          badge.innerText = data.aktif ? "Armada Sedang Dalam Perjalanan" : "Armada Sedang Berhenti / Selesai";
+          document.getElementById("update-time").innerText = "Terakhir diperbarui: Pukul " + data.waktu + " WIB";
 
-          if (data.aktif) {
-            badge.className = "status-badge aktif";
-            badge.innerText = isPulang ? "🚐 Armada Dalam Perjalanan Pulang" : "🚐 Armada Dalam Perjalanan ke Sekolah";
-          } else {
-            badge.className = "status-badge nonaktif";
-            badge.innerText = data.selesaiAntar ? (isPulang ? "🏠 Pengantaran Pulang Selesai" : "🏫 Armada Telah Tiba di Sekolah") : "Armada Belum Berangkat";
-          }
-
-          document.getElementById("update-time").innerText = "Update Terakhir: Pukul " + data.waktu + " WIB";
           const posisi = L.latLng(data.lat, data.lng);
           const ikonMobil = L.divIcon({
-            html: `<div style="font-size:32px; line-height:1;">🚐</div>`,
+            html: "<div style='font-size:32px; line-height:1;'>🚐</div>",
             className: "",
             iconSize: L.point(32, 32),
             iconAnchor: L.point(16, 16)
           });
 
-          if (!marker) marker = L.marker(posisi, { icon: ikonMobil }).addTo(map).bindPopup("<b>Armada Pak Tony</b><br>Update: " + data.waktu);
-          else marker.setLatLng(posisi);
-          map.panTo(posisi);
+          if (!marker) {
+            marker = L.marker(posisi, { icon: ikonMobil }).addTo(map).bindPopup("Armada Pak Tony").openPopup();
+          } else {
+            marker.setLatLng(posisi);
+          }
+          map.setView(posisi, 16);
 
           const jarak = hitungJarak(data.lat, data.lng, muridAktif.lat, muridAktif.lng);
-          const isPerum = ANAK_PERUM.includes(kunciAnak);
-          const isPulangSaja = PULANG_SAJA.includes(kunciAnak);
-          const isNaura = kunciAnak.includes("naura");
-
-          const batasJarak = isNaura ? 150 : 250;
-          const teksJarak = isNaura ? "150 meter" : "250 meter";
-          const teksJarakSuara = isNaura ? "seratus lima puluh meter" : "dua ratus lima puluh meter";
-
-          const sedangDitunggu = data.aktif && data.tunggu && data.tunggu.kunci === kunciAnak;
-          const harusPeringatan = (isPulang && isPulangSaja)
-            ? false
-            : (isPerum ? (data.masukPerum === true) : (jarak <= batasJarak));
+          const batasOrtu = (muridAktif.nama.toLowerCase() === "naura") ? 400 : 250;
           const banner = document.getElementById("notif-ortu");
-
-          if (!data.aktif && data.selesaiAntar && (!isPulang || !isPulangSaja)) {
-            banner.style.background = "#dcfce7"; banner.style.borderColor = "#16a34a"; banner.style.color = "#166534";
-            banner.innerText = isPulang ? "✅ Alhamdulillah, pengantaran pulang selesai pukul " + data.waktu + " WIB." : "✅ Alhamdulillah, ananda telah sampai di sekolah pukul " + data.waktu + " WIB.";
+          if (data.aktif && jarak <= batasOrtu) {
+            banner.innerText = "Armada Pak Tony sudah dekat dengan rumah " + muridAktif.nama + "!";
             banner.classList.remove("hidden");
-            menitTerakhirNotifOrtu = 0;
-
-          } else if (sedangDitunggu) {
-            const menitTunggu = data.tunggu.menit;
-            banner.style.background = "#fee2e2"; banner.style.borderColor = "#dc2626"; banner.style.color = "#991b1b";
-            banner.innerText = `⏰ Pak Tony sudah menunggu ${menitTunggu} menit di depan rumahmu (${namaAnak})!`;
-            banner.classList.remove("hidden");
-
-            if (menitTunggu > menitTerakhirNotifOrtu) {
-              menitTerakhirNotifOrtu = menitTunggu;
-              const pesanTunggu = `Pak Tony sudah menunggu ${menitTunggu} menit di depan rumahmu`;
-              bunyikanSuara(pesanTunggu);
-              if ("Notification" in window && Notification.permission === "granted") {
-                navigator.serviceWorker.ready.then(reg => {
-                  reg.showNotification("⏰ Jemputan Menunggu!", {
-                    body: pesanTunggu + " (" + namaAnak + ")",
-                    icon: "mobil.png",
-                    tag: "tunggu-jemputan",
-                    renotify: true
-                  });
-                });
-              }
-            }
-
-          } else if (data.aktif && harusPeringatan) {
-            menitTerakhirNotifOrtu = 0;
-            banner.style.background = "#fef08a"; banner.style.borderColor = "#eab308"; banner.style.color = "#854d0e";
-            const teksBanner = isPerum
-              ? (isPulang ? "🚨 Assalamualaikum, Armada Pak Tony sudah masuk perumahan mengantar " + namaAnak + " pulang!" : "🚨 Armada Pak Tony sudah masuk area perumahan! Segera bersiap.")
-              : (isPulang ? "🚨 Assalamualaikum, insyaAllah " + namaAnak + " " + teksJarak + " lagi sampai rumah!" : "🚨 Armada Pak Tony sudah dekat! (" + teksJarak + " lagi)");
-            const teksSuara = isPerum
-              ? (isPulang ? "Assalamualaikum, Armada Pak Tony sudah masuk area perumahan mengantar ananda pulang" : "Armada Pak Tony sudah masuk area perumahan, segera bersiap")
-              : (isPulang ? "Assalamualaikum, insyaAllah " + namaAnak + " " + teksJarakSuara + " lagi sampai rumah" : "Armada Pak Tony sudah dekat, " + teksJarakSuara + " lagi");
-
-            banner.innerText = teksBanner;
-            banner.classList.remove("hidden");
-            if (!sudahBunyi["ortu"]) {
-              sudahBunyi["ortu"] = true;
-              bunyikanSuara(teksSuara);
-              if ("Notification" in window && Notification.permission === "granted") {
-                navigator.serviceWorker.ready.then(reg => {
-                  reg.showNotification("🚐 Armada Pak Tony Dekat!", {
-                    body: teksBanner.replace("🚨 ", ""),
-                    icon: "mobil.png",
-                    tag: "dekat-rumah"
-                  });
-                });
-              }
+            if (!sudahBunyiOrtu) {
+              sudahBunyiOrtu = true;
+              bunyikanSuara("Armada Pak Tony sudah sampai di dekat rumah " + muridAktif.nama);
             }
           } else {
             banner.classList.add("hidden");
-            menitTerakhirNotifOrtu = 0;
-            if (!isPerum && jarak > (batasJarak + 100)) sudahBunyi["ortu"] = false;
+            if (jarak > (batasOrtu + 100)) sudahBunyiOrtu = false;
           }
 
-          document.getElementById("link-macet").href = "https://" + "www.google" + ".com/maps/@" + data.lat + "," + data.lng + ",16z/data=!5m1!1e1";
+          document.getElementById("link-macet").href = "https://" + "www.google" + ".com/maps/dir/?api=1&destination=" + data.lat + "," + data.lng;
         });
     }
 
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js");
+    }
   </script>
-  <!-- Banner Otomatis Instal Aplikasi (Android & iPhone) -->
-<div id="installBanner" style="display:none; position:fixed; bottom:20px; left:15px; right:15px; background:#0f5132; color:white; padding:16px; border-radius:14px; box-shadow:0 8px 20px rgba(0,0,0,0.3); z-index:9999; font-family:sans-serif; align-items:center; justify-content:space-between; gap:12px;">
-  <div style="flex:1;">
-    <div style="font-weight:bold; font-size:15px;">📲 Pasang Aplikasi Pak Tony</div>
-    <div id="installDesc" style="font-size:12px; opacity:0.95; margin-top:4px; line-height:1.4;">
-      Biar lebih mudah pantau & terima notifikasi jemputan
-    </div>
-  </div>
-  <div style="display:flex; gap:8px; align-items:center;">
-    <button id="btnInstallApp" style="background:#ffc107; color:#000; border:none; padding:10px 14px; border-radius:8px; font-weight:bold; font-size:13px; cursor:pointer; white-space:nowrap;">Instal</button>
-    <button onclick="document.getElementById('installBanner').style.display='none'" style="background:transparent; color:white; border:none; font-size:18px; cursor:pointer; padding:4px;">✕</button>
-  </div>
-</div>
-
-<script>
-  let deferredPrompt;
-  const installBanner = document.getElementById('installBanner');
-  const btnInstallApp = document.getElementById('btnInstallApp');
-  const installDesc = document.getElementById('installDesc');
-
-  // Cek apakah sudah dibuka dari aplikasi yang terinstal (Standalone)
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-
-  // 1. Deteksi Android (Chrome / Edge / Samsung Internet)
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    if (!isStandalone) {
-      installBanner.style.display = 'flex';
-    }
-  });
-
-  btnInstallApp.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      installBanner.style.display = 'none';
-    }
-    deferredPrompt = null;
-  });
-
-  window.addEventListener('appinstalled', () => {
-    installBanner.style.display = 'none';
-    deferredPrompt = null;
-  });
-
-  // 2. Deteksi iPhone / iPad (iOS Safari)
-  const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
-  if (isIOS && !isStandalone) {
-    btnInstallApp.style.display = 'none'; // Sembunyikan tombol instal otomatis karena iOS harus manual
-    installDesc.innerHTML = 'Pengguna iPhone: tekan ikon <b>Bagikan (⬆️)</b> di bawah layar Safari, lalu pilih <b>Tambahkan ke Layar Utama</b>.';
-    installBanner.style.display = 'flex';
-  }
-</script>
 </body>
 </html>
